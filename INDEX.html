@@ -1172,43 +1172,6 @@ function vSettings(){
   appear.appendChild(dmrow);
   s.appendChild(appear);
 
-  // Music app selector
-  (function(){
-    var mc=card({padding:'20px'});
-    mc.appendChild(hx('h3',{fontFamily:'Lora,Georgia,serif',fontSize:'16px',marginBottom:'6px',color:'var(--text)'},'🎵 Default Music App'));
-    mc.appendChild(p({fontSize:'13px',color:'var(--muted)',marginBottom:'12px'},'Choose which app appears in your Today music widget.'));
-    var MSVC={spotify:{l:'Spotify',e:'💚'},apple:{l:'Apple Music',e:'🎵'},youtube:{l:'YouTube Music',e:'▶️'},amazon:{l:'Amazon Music',e:'🎶'},tidal:{l:'Tidal',e:'🌊'},deezer:{l:'Deezer',e:'🎧'}};
-    var mg=d({display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'});
-    Object.keys(MSVC).forEach(function(k){
-      var sv=MSVC[k];var act=(S.defaultMusicApp||'spotify')===k;
-      var mb=document.createElement('button');
-      mb.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;border:1.5px solid '+(act?'var(--accent)':'var(--border)')+';background:'+(act?'var(--alight)':'var(--bg)')+';cursor:pointer;font-family:DM Sans,sans-serif;font-size:13px;font-weight:'+(act?'600':'400')+';color:'+(act?'var(--adark)':'var(--text)')+';transition:all .15s';
-      mb.innerHTML='<span style="font-size:18px">'+sv.e+'</span>'+sv.l+(act?' ✓':'');
-      mb.onclick=function(){S.defaultMusicApp=k;renderView();};
-      mg.appendChild(mb);
-    });
-    mc.appendChild(mg);s.appendChild(mc);
-  })();
-
-  // Default music player
-  (function(){
-    var mpCard=card({padding:'20px'});
-    mpCard.appendChild(hx('h3',{fontFamily:'Lora,Georgia,serif',fontSize:'16px',marginBottom:'6px',color:'var(--text)'},'🎵 Default Music Player'));
-    mpCard.appendChild(p({fontSize:'13px',color:'var(--muted)',marginBottom:'14px'},'Choose which service appears in your Today music widget.'));
-    var SVCS3=[{id:'spotify',label:'Spotify',emoji:'💚'},{id:'apple',label:'Apple Music',emoji:'🎵'},{id:'youtube',label:'YouTube Music',emoji:'▶️'},{id:'amazon',label:'Amazon Music',emoji:'🎶'},{id:'tidal',label:'Tidal',emoji:'🌊'},{id:'deezer',label:'Deezer',emoji:'🎧'},{id:'',label:'Show all services',emoji:'🎼'}];
-    var cur2=localStorage.getItem('focusly_music_player')||'';
-    var mgrid2=d({display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',gap:'8px'});
-    SVCS3.forEach(function(svc){
-      var act=svc.id===cur2;
-      var b=document.createElement('button');
-      b.style.cssText='display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;border:1.5px solid '+(act?'var(--accent)':'var(--border)')+';background:'+(act?'var(--alight)':'var(--bg)')+';cursor:pointer;font-family:DM Sans,sans-serif;font-size:13px;color:'+(act?'var(--adark)':'var(--text)')+';font-weight:'+(act?600:400)+';width:100%';
-      b.innerHTML='<span style="font-size:15px">'+svc.emoji+'</span>'+(act?'<span style="color:var(--green);font-size:11px">✓ </span>':'')+svc.label;
-      b.onclick=function(){if(!svc.id)localStorage.removeItem('focusly_music_player');else localStorage.setItem('focusly_music_player',svc.id);renderView();};
-      mgrid2.appendChild(b);
-    });
-    mpCard.appendChild(mgrid2);s.appendChild(mpCard);
-  })();
-
   // Cloud sync card
   (function(){     var sc=card({padding:'20px'});     sc.appendChild(hx('h3',{fontFamily:'Lora,Georgia,serif',fontSize:'16px',marginBottom:'6px',color:'var(--text)'},'☁️ Sync Across Devices'));     sc.appendChild(p({fontSize:'13px',color:'var(--muted)',marginBottom:'14px',lineHeight:'1.55'},'Keep all your data in sync across every device you use.'));
     var expSec=d({padding:'14px',borderRadius:'12px',background:'var(--bg)',border:'1px solid var(--border)',marginBottom:'10px'});     expSec.appendChild(hx('h4',{fontSize:'13px',fontWeight:'600',color:'var(--text)',marginBottom:'5px'},'📦 Backup & Restore'));     expSec.appendChild(p({fontSize:'12px',color:'var(--muted)',marginBottom:'10px'},'Export your data as a JSON file — import it on any device.'));     var expRow=d({display:'flex',gap:'8px',flexWrap:'wrap'});     expRow.appendChild(btn('⬇ Export','btn-primary btn-sm',function(){exportDataJSON();}));     var fl=document.createElement('label');fl.className='btn btn-secondary btn-sm';fl.style.cursor='pointer';fl.textContent='⬆ Import';     var fi=document.createElement('input');fi.type='file';fi.accept='.json';fi.style.display='none';
