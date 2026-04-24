@@ -619,7 +619,7 @@ var S = {   view:'dashboard', currentUser:null, energy:null, showCapture:false,
   reminders:[     {id:1,emoji:'💊',label:'Medication', time:'08:00',   repeat:'Daily',   active:true},     {id:2,emoji:'💧',label:'Hydration',  time:'Every 2h',repeat:'Daily',   active:true},     {id:3,emoji:'🔑',label:'Keys check', time:'07:45',   repeat:'Weekdays',active:true},     {id:4,emoji:'🏃',label:'School run', time:'15:15',   repeat:'Weekdays',active:false},     {id:5,emoji:'😴',label:'Wind down',  time:'21:30',   repeat:'Daily',   active:false},
   ],
   projects:[     {id:1,name:'Home Renovation',  emoji:'🏠',color:'#C89030',cLight:'#FBF2DC',tasks:8, notes:'Bathroom first'},     {id:2,name:'Job Applications', emoji:'💼',color:'#7065A8',cLight:'#ECEAF8',tasks:5, notes:'CV draft done'},     {id:3,name:'Study: Level 3',   emoji:'📚',color:'#4E8B6A',cLight:'#E0F0E8',tasks:12,notes:'Assignment due March'},
-  ],   focus:{mode:'idle',secs:25*60,cycle:0,dur:25,brk:5,sound:'none'},defaultMusicApp:'spotify',
+  ],   focus:{mode:'idle',secs:25*60,cycle:0,dur:25,brk:5,sound:'none'},
   sleep:{     bed:'22:00',wake:'07:00',wind:null,     strat:[{id:'s1',label:'Screen-free 60 mins before bed',on:true},{id:'s2',label:'Cool room (16–18°C)',on:false},{id:'s3',label:'Consistent wind-down routine',on:true},{id:'s4',label:'Single alarm only (no snoozing)',on:false},{id:'s5',label:'White/brown noise for sleep',on:true}],     list:[{id:0,label:'Alarm off ✅',done:false},{id:1,label:'Stretch 2 minutes',done:false},{id:2,label:'Drink water',done:false},{id:3,label:'Medication',done:false},{id:4,label:'Open curtains',done:false},{id:5,label:'Quick shower',done:false},{id:6,label:'Bag check',done:false},{id:7,label:'Breakfast',done:false}],
   },
 };
@@ -844,21 +844,14 @@ function wMusic(){
   var defId=localStorage.getItem('focusly_music_player')||'';
   var active=SVCS.find(function(s){return s.id===defId;})||null;
   if(active){
-    c2.appendChild(p({fontSize:'12px',color:'var(--muted)',marginBottom:'10px'},'Your default player'));
     var bigBtn=document.createElement('a');bigBtn.href=active.url;bigBtn.target='_blank';bigBtn.rel='noopener';
     bigBtn.style.cssText='display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;border:2px solid var(--accent);background:var(--alight);text-decoration:none;margin-bottom:10px';
     bigBtn.innerHTML='<span style="font-size:28px">'+active.emoji+'</span><span style="font-size:15px;font-weight:600;color:var(--text)">Open '+active.label+'</span>';
     c2.appendChild(bigBtn);
-    c2.appendChild(btn('Change player','btn-ghost btn-sm',function(){localStorage.removeItem('focusly_music_player');renderView();}));
   } else {
-    c2.appendChild(p({fontSize:'12px',color:'var(--muted)',marginBottom:'10px'},'Tap to choose your music app'));
-    var mgrid=d({display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginBottom:'10px'});
-    SVCS.forEach(function(svc){
-      var b=document.createElement('button');b.style.cssText='display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);cursor:pointer;font-family:DM Sans,sans-serif;font-size:13px;color:var(--text);width:100%;transition:all .15s';
-      b.innerHTML='<span style="font-size:17px">'+svc.emoji+'</span>'+svc.label;
-      b.onclick=function(){localStorage.setItem('focusly_music_player',svc.id);renderView();};mgrid.appendChild(b);
-    });
-    c2.appendChild(mgrid);
+    var noSvc=d({padding:'12px 14px',borderRadius:'10px',background:'var(--bg)',border:'1px solid var(--border)',fontSize:'13px',color:'var(--muted)',marginBottom:'10px'});
+    noSvc.textContent='No music app selected — choose one in Settings → Default Music Player.';
+    c2.appendChild(noSvc);
   }
   if(!S.musicEmbed)S.musicEmbed='';
   var embedRow=d({display:'flex',gap:'8px',alignItems:'center',marginTop:'10px'});
@@ -1171,6 +1164,26 @@ function vSettings(){
   var appear=card({padding:'20px'});   appear.appendChild(hx('h3',{fontFamily:'Lora,Georgia,serif',fontSize:'16px',marginBottom:'14px',color:'var(--text)'},'🎨 Appearance'));   var dmrow=row('space-between');   var dml=d({}); dml.innerHTML='<div style="font-size:14px;font-weight:500;color:var(--text)">Dark Mode</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Easier on the eyes at night</div>';   dmrow.appendChild(dml); dmrow.appendChild(tog(DARK,function(){toggleDark();},'var(--accent)'));
   appear.appendChild(dmrow);
   s.appendChild(appear);
+
+  // Default music player
+  (function(){
+    var mpCard=card({padding:'20px'});
+    mpCard.appendChild(hx('h3',{fontFamily:'Lora,Georgia,serif',fontSize:'16px',marginBottom:'6px',color:'var(--text)'},'🎵 Default Music Player'));
+    mpCard.appendChild(p({fontSize:'13px',color:'var(--muted)',marginBottom:'14px'},'Choose which service appears in your Today music widget.'));
+    var SVCS=[{id:'spotify',label:'Spotify',emoji:'💚'},{id:'apple',label:'Apple Music',emoji:'🎵'},{id:'youtube',label:'YouTube Music',emoji:'▶️'},{id:'amazon',label:'Amazon Music',emoji:'🎶'},{id:'tidal',label:'Tidal',emoji:'🌊'},{id:'deezer',label:'Deezer',emoji:'🎧'}];
+    var cur=localStorage.getItem('focusly_music_player')||'';
+    var mgrid=d({display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(140px,1fr))',gap:'8px'});
+    SVCS.forEach(function(svc){
+      var act=svc.id===cur;
+      var b=document.createElement('button');
+      b.style.cssText='display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;border:1.5px solid '+(act?'var(--accent)':'var(--border)')+';background:'+(act?'var(--alight)':'var(--bg)')+';cursor:pointer;font-family:DM Sans,sans-serif;font-size:13px;color:'+(act?'var(--adark)':'var(--text)')+';font-weight:'+(act?600:400)+';width:100%;transition:all .15s';
+      b.innerHTML='<span style="font-size:15px">'+svc.emoji+'</span>'+(act?'<span style="color:var(--green);font-size:11px;margin-left:2px">✓</span> ':'')+svc.label;
+      b.onclick=function(){localStorage.setItem('focusly_music_player',svc.id);renderView();};
+      mgrid.appendChild(b);
+    });
+    mpCard.appendChild(mgrid);
+    s.appendChild(mpCard);
+  })();
 
   // Cloud sync card
   (function(){     var sc=card({padding:'20px'});     sc.appendChild(hx('h3',{fontFamily:'Lora,Georgia,serif',fontSize:'16px',marginBottom:'6px',color:'var(--text)'},'☁️ Sync Across Devices'));     sc.appendChild(p({fontSize:'13px',color:'var(--muted)',marginBottom:'14px',lineHeight:'1.55'},'Keep all your data in sync across every device you use.'));
