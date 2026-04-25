@@ -1112,10 +1112,40 @@ function vReminders(){
   calCard.appendChild(calNote);
   s.appendChild(calCard);
    var list=d({display:'flex',flexDirection:'column',gap:'10px'});
-  S.reminders.forEach(function(r,i){     var c=card({padding:'14px 16px',opacity:r.active?'1':'.6',animation:'fadeUp .3s ease '+(i*.05)+'s both'});
-    var rrow=row();     var icon=d({width:'42px',height:'42px',borderRadius:'11px',background:r.active?'var(--alight)':'var(--bg-alt)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'20px',flexShrink:'0'});icon.textContent=r.emoji;     var info=d({flex:'1',marginLeft:'12px'});info.innerHTML='<div style="font-weight:500;font-size:15px;color:var(--text)">'+r.label+'</div><div style="font-size:12px;color:var(--muted);margin-top:2px">⏰ '+r.time+' · 🔁 '+r.repeat+'</div>';     var ctrl=row(); ctrl.style.gap='8px';     ctrl.appendChild(badge(r.active?'Active':'Off',r.active?'var(--green)':'var(--muted)',r.active?'var(--glight)':'var(--bg-alt)'));
+  S.reminders.forEach(function(r,i){
+    var c=card({padding:'14px 16px',opacity:r.active?'1':'.6',animation:'fadeUp .3s ease '+(i*.05)+'s both'});
+    var rrow=row();
+    var icon=d({width:'42px',height:'42px',borderRadius:'11px',background:r.active?'var(--alight)':'var(--bg-alt)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'20px',flexShrink:'0'});icon.textContent=r.emoji;
+    var info=d({flex:'1',marginLeft:'12px'});info.innerHTML='<div style="font-weight:500;font-size:15px;color:var(--text)">'+r.label+'</div><div style="font-size:12px;color:var(--muted);margin-top:2px">⏰ '+r.time+' · 🔁 '+r.repeat+'</div>';
+    var ctrl=row(); ctrl.style.gap='8px';
+    ctrl.appendChild(badge(r.active?'Active':'Off',r.active?'var(--green)':'var(--muted)',r.active?'var(--glight)':'var(--bg-alt)'));
     ctrl.appendChild(tog(r.active,function(){r.active=!r.active;renderView();}));
-    rrow.appendChild(icon); rrow.appendChild(info); rrow.appendChild(ctrl); c.appendChild(rrow); list.appendChild(c);
+    var editBtn=(function(rem){
+      var b=document.createElement('button');b.className='icon-btn';b.title='Edit reminder';b.innerHTML=ic('capture',13,'var(--muted)');
+      b.onclick=function(){showModal('Edit Reminder',520,function(body){
+        var er=row();er.style.cssText+=';gap:8px;margin-bottom:8px';
+        var ei=inp('⏰');ei.style.cssText='max-width:56px;text-align:center;font-size:20px;width:56px;padding:8px';ei.value=rem.emoji;
+        var li=inp('Reminder name...');li.style.flex='1';li.value=rem.label;
+        er.appendChild(ei);er.appendChild(li);
+        var tr=row();tr.style.cssText+=';gap:8px;margin-bottom:8px';
+        var ti=document.createElement('input');ti.type='time';Object.assign(ti.style,{flex:'1',padding:'10px 14px',borderRadius:'10px',border:'1.5px solid #E4D8C8',background:'#FDF8F2',fontFamily:'DM Sans,sans-serif',fontSize:'14px',color:'#2E1F0F',outline:'none'});ti.value=rem.time;
+        var sel=document.createElement('select');sel.style.cssText='flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);font-family:DM Sans,sans-serif;font-size:14px;color:var(--text)';
+        ['Once','Daily','Weekdays','Weekends','Weekly'].forEach(function(opt){var o=document.createElement('option');o.textContent=opt;o.value=opt;if(opt===rem.repeat)o.selected=true;sel.appendChild(o);});
+        tr.appendChild(ti);tr.appendChild(sel);
+        var br=d({display:'flex',gap:'8px'});
+        br.appendChild(btn('Save','btn-primary',function(){if(!li.value.trim()||!ti.value.trim())return;rem.emoji=ei.value||'⏰';rem.label=li.value.trim();rem.time=ti.value.trim();rem.repeat=sel.value;closeModal();renderView();}));
+        br.appendChild(btn('Cancel','btn-ghost',closeModal));
+        body.appendChild(er);body.appendChild(tr);body.appendChild(br);
+      });};
+      return b;
+    })(r);
+    var delBtn=(function(rem){
+      var b=document.createElement('button');b.className='icon-btn';b.title='Delete reminder';b.innerHTML=ic('trash',13,'var(--rose)');
+      b.onclick=function(){S.reminders=S.reminders.filter(function(x){return x.id!==rem.id;});renderView();};
+      return b;
+    })(r);
+    ctrl.appendChild(editBtn);ctrl.appendChild(delBtn);
+    rrow.appendChild(icon);rrow.appendChild(info);rrow.appendChild(ctrl);c.appendChild(rrow);list.appendChild(c);
   });
   s.appendChild(list);   var nc=card({padding:'18px',background:'var(--amlight)',border:'1px solid rgba(200,144,48,.2)'});   nc.innerHTML='<h3 style="font-family:Lora,Georgia,serif;font-size:14px;color:var(--amber);margin-bottom:8px">📱 Notification Channels</h3><p style="font-size:13px;color:var(--mid);margin-bottom:12px">Choose how you want to receive reminders.</p><div style="display:flex;gap:16px">'     +['Push notification','Email','SMS'].map(function(ch,i){return'<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--mid)"><input type="checkbox" '+(i===0?'checked':'')+' style="accent-color:var(--accent)">'+ch+'</label>';}).join('')+'</div>';
   s.appendChild(nc); return s;
