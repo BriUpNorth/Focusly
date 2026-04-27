@@ -591,7 +591,10 @@ function toggleDark() {
 var SB = { open:true, pinned:true };
 
 var NAV_DEFAULTS = [   {id:'dashboard', label:'Today',     svg:'<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'},   {id:'tasks',     label:'Tasks',     svg:'<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>'},   {id:'projects',  label:'Projects',  svg:'<path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>'},   {id:'focus',     label:'Focus',     svg:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'},   {id:'reminders', label:'Reminders', svg:'<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>'},   {id:'sleep',     label:'Sleep',     svg:'<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>'},   {id:'toolkit',   label:'Toolkit',   svg:'<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>'},
-]; var NAV_ORDER = JSON.parse(localStorage.getItem('focusly_nav_order') || 'null') || NAV_DEFAULTS.map(function(n){return n.id;});
+  {id:'checklists',label:'Checklists',svg:'<polyline points="9 11 12 14 22 4"/><polyline points="9 20 4 15 2 17"/>'},
+  {id:'voice',     label:'Voice',     svg:'<path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>'},
+  {id:'meetings',  label:'Meetings',  svg:'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>'},
+]; var _savedNav=JSON.parse(localStorage.getItem('focusly_nav_order')||'null'); var _allNavIds=NAV_DEFAULTS.map(function(n){return n.id;}); if(_savedNav){_allNavIds.forEach(function(id){if(_savedNav.indexOf(id)<0)_savedNav.push(id);});} var NAV_ORDER=_savedNav||_allNavIds.slice();
 
 function buildSidebarNav() {   var nav = document.getElementById('sb-nav');   nav.innerHTML = '';
   NAV_ORDER.forEach(function(id) {
@@ -763,7 +766,7 @@ async function bioLogin() {
 //  WIDGET SYSTEM
 // ════════════════════════════════════════════════════════
 var WIDGET_DEFS = [   { id:'greeting',   label:'Greeting & Date',  emoji:'🌤️',  default:true,  removable:false },   { id:'energy',     label:'Energy Check-in',  emoji:'⚡',  default:true,  removable:true  },   { id:'tasks',      label:"Today's Focus",    emoji:'✅',  default:true,  removable:true  }, { id:'streak',     label:'Your Streak',      emoji:'🔥',  default:true,  removable:true  },
-   { id:'capture',    label:'Quick Capture',    emoji:'📝',  default:true,  removable:true  },   { id:'habits',     label:'Habit Tracker',    emoji:'🏆',  default:false, removable:true  },   { id:'mood',       label:'Mood Log',         emoji:'😊',  default:false, removable:true  },   { id:'water',      label:'Water Tracker',    emoji:'💧',  default:false, removable:true  },   { id:'intention',  label:'Daily Intention',  emoji:'🎯',  default:false, removable:true  },   { id:'music',      label:'Music',            emoji:'🎵',  default:false, removable:true  },   { id:'quote',      label:'Daily Quote',      emoji:'💬',  default:false, removable:true  },   { id:'weather',    label:'Weather Mood',     emoji:'🌦️',  default:false, removable:true  },   { id:'meds',       label:'Medication Log',   emoji:'💊',  default:false, removable:true  },   { id:'timeblock',  label:'Time Block',       emoji:'⏰',  default:false, removable:true  },
+   { id:'capture',    label:'Quick Capture',    emoji:'📝',  default:true,  removable:true  },   { id:'habits',     label:'Habit Tracker',    emoji:'🏆',  default:false, removable:true  },   { id:'water',      label:'Water Tracker',    emoji:'💧',  default:false, removable:true  },   { id:'intention',  label:'Daily Intention',  emoji:'🎯',  default:false, removable:true  },   { id:'music',      label:'Music',            emoji:'🎵',  default:false, removable:true  },   { id:'quote',      label:'Daily Quote',      emoji:'💬',  default:false, removable:true  },   { id:'meds',       label:'Medication Log',   emoji:'💊',  default:false, removable:true  },   { id:'timeblock',  label:'Time Block',       emoji:'⏰',  default:false, removable:true  },
   { id:'checklist',  label:'Checklists',       emoji:'✅',  default:false, removable:true  },
   { id:'voice',      label:'Voice Notes',      emoji:'🎙️', default:false, removable:true  },
   { id:'meeting',    label:'Meeting Recorder', emoji:'📋',  default:false, removable:true  },
@@ -891,21 +894,7 @@ function wHabits(){   if(!S.habits)S.habits=[{id:1,label:'Exercise',days:[false,
   });   var addBtn=btn('+ Add habit','btn-ghost btn-sm',function(){showModal('Add Habit',400,function(body){var ni=inp('e.g. Drink water');var br=d({display:'flex',gap:'8px',marginTop:'10px'});br.appendChild(btn('Add','btn-primary',function(){if(ni.value.trim()){S.habits.push({id:Date.now(),label:ni.value.trim(),days:[false,false,false,false,false,false,false]});closeModal();renderView();}}));br.appendChild(btn('Cancel','btn-ghost',closeModal));body.appendChild(ni);body.appendChild(br);});});   addBtn.style.marginTop='8px';c2.appendChild(addBtn);
   return c2;
 }
-function wMood(){
-  if(!S.moodLog)S.moodLog=[];
-  var todayKey=new Date().toDateString();
-  var todayMood=S.moodLog.find(function(m){return m.date===todayKey;});   var c2=card({padding:'20px'});   c2.appendChild(hx('h2',{fontFamily:'Lora,Georgia,serif',fontSize:'16px',marginBottom:'8px',color:'var(--text)'},'😊 Mood Log'));   c2.appendChild(p({fontSize:'12px',color:'var(--muted)',marginBottom:'12px'},'How are you feeling today?'));   var mg=d();mg.className='mood-grid';   var moods=['😫','😔','😐','🙂','😄','🤩'];
-  moods.forEach(function(emoji){     var b=document.createElement('button');b.className='mood-btn'+(todayMood&&todayMood.mood===emoji?' sel':'');
-    b.textContent=emoji;b.title=emoji;
-    b.onclick=function(){
-      S.moodLog=S.moodLog.filter(function(m){return m.date!==todayKey;});
-      S.moodLog.push({date:todayKey,mood:emoji});renderView();
-    };
-    mg.appendChild(b);
-  });
-  c2.appendChild(mg);   if(todayMood){var note=d({marginTop:'12px',fontSize:'13px',color:'var(--mid)'});note.textContent='Today: '+todayMood.mood;c2.appendChild(note);}
-  return c2;
-}
+function wMood(){ var c2=card({padding:'20px'});c2.innerHTML='<p style="color:var(--muted);font-size:13px">Mood Log has been removed.</p>';return c2;}
 function wWater(){
   if(S.water===undefined)S.water=0;   var c2=card({padding:'20px'});   var ch=row('space-between');ch.style.marginBottom='12px';   ch.appendChild(hx('h2',{fontFamily:'Lora,Georgia,serif',fontSize:'16px',color:'var(--text)'},'💧 Water Tracker'));
   var goal=8;var pct=Math.round(S.water/goal*100);   ch.appendChild(d({fontSize:'13px',color:'var(--mid)'},''+S.water+'/'+goal+' glasses'));
@@ -955,14 +944,7 @@ function wQuote(){
   c2.appendChild(qEl);c2.appendChild(aEl);
   return c2;
 }
-function wWeather(){   if(!S.weatherMood)S.weatherMood='';   var c2=card({padding:'20px'});   c2.appendChild(hx('h2',{fontFamily:'Lora,Georgia,serif',fontSize:'16px',marginBottom:'8px',color:'var(--text)'},'🌦️ Weather Mood'));   c2.appendChild(p({fontSize:'12px',color:'var(--muted)',marginBottom:'12px'},'How does the weather feel today?'));   var weathers=[{e:'☀️',l:'Sunny'},{e:'🌤️',l:'Partly cloudy'},{e:'☁️',l:'Overcast'},{e:'🌧️',l:'Rainy'},{e:'⛈️',l:'Stormy'},{e:'❄️',l:'Cold'}];   var wr=d({display:'flex',gap:'8px',flexWrap:'wrap'});
-  weathers.forEach(function(w){     var b=document.createElement('button');     b.style.cssText='padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);background:'+(S.weatherMood===w.l?'var(--alight)':'var(--card)')+';cursor:pointer;font-size:13px;color:var(--mid);display:flex;align-items:center;gap:5px;font-family:DM Sans,sans-serif;transition:all .15s';     b.innerHTML='<span style="font-size:18px">'+w.e+'</span>'+w.l;
-    b.onclick=function(){S.weatherMood=w.l;renderView();};
-    wr.appendChild(b);
-  });
-  c2.appendChild(wr);
-  return c2;
-}
+function wWeather(){ var c2=card({padding:'20px'});c2.innerHTML='<p style="color:var(--muted);font-size:13px">Weather Mood has been removed.</p>';return c2;}
 function wMeds(){
   if(!S.medsLog)S.medsLog={};
   var todayKey=new Date().toDateString();
@@ -980,10 +962,52 @@ function wMeds(){
   });
   return c2;
 }
-function wTimeBlock(){   if(!S.timeBlocks)S.timeBlocks=[{time:'9:00',task:'',color:'var(--alight)'},{time:'10:00',task:'',color:'var(--glight)'},{time:'11:00',task:'',color:'var(--plight)'},{time:'14:00',task:'',color:'var(--amlight)'},{time:'15:00',task:'',color:'var(--rlight)'}];   var c2=card({padding:'20px'});   c2.appendChild(hx('h2',{fontFamily:'Lora,Georgia,serif',fontSize:'16px',marginBottom:'14px',color:'var(--text)'},'⏰ Time Block'));
-  S.timeBlocks.forEach(function(block,i){     var r=d({display:'flex',alignItems:'center',gap:'10px',marginBottom:'8px'});     var timeLbl=d({fontSize:'12px',color:'var(--muted)',fontWeight:'600',width:'42px',flexShrink:'0'});timeLbl.textContent=block.time;     var taskInp=inp('+  Add task...',block.task);     taskInp.style.cssText='flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:'+block.color+';font-family:DM Sans,sans-serif;font-size:13px;color:var(--text);outline:none';
-    taskInp.oninput=function(){block.task=taskInp.value;};
-    r.appendChild(timeLbl);r.appendChild(taskInp);c2.appendChild(r);
+var TB_COLORS=[{l:'Blue',v:'var(--alight)'},{l:'Green',v:'var(--glight)'},{l:'Purple',v:'var(--plight)'},{l:'Amber',v:'var(--amlight)'},{l:'Rose',v:'var(--rlight)'}];
+function showAddBlock(existing){
+  showModal(existing?'Edit Block':'Add Time Block',420,function(body){
+    var timeRow=d({display:'flex',gap:'8px',marginBottom:'10px'});
+    var timeInp=inp('HH:MM',existing?existing.time:'');timeInp.style.flex='1';timeInp.placeholder='e.g. 09:00';
+    var taskInp=inp('Task or note...',existing?existing.task:'');taskInp.style.cssText='width:100%;margin-bottom:10px';
+    timeRow.appendChild(timeInp);body.appendChild(timeRow);body.appendChild(taskInp);
+    var selColor=existing?existing.color:TB_COLORS[0].v;
+    var colorRow=d({display:'flex',gap:'8px',marginBottom:'14px',flexWrap:'wrap'});
+    TB_COLORS.forEach(function(tc){
+      var sw=document.createElement('button');
+      sw.style.cssText='width:28px;height:28px;border-radius:50%;background:'+tc.v+';border:2px solid '+(selColor===tc.v?'var(--accent)':'transparent')+';cursor:pointer;flex-shrink:0';
+      sw.title=tc.l;
+      sw.onclick=function(){selColor=tc.v;colorRow.querySelectorAll('button').forEach(function(b){b.style.borderColor='transparent';});this.style.borderColor='var(--accent)';};
+      colorRow.appendChild(sw);
+    });
+    body.appendChild(colorRow);
+    var br=d({display:'flex',gap:'8px'});
+    br.appendChild(btn(existing?'Save':'Add Block','btn-primary',function(){
+      var t=timeInp.value.trim();var task=taskInp.value.trim();
+      if(!t){alert('Please enter a time.');return;}
+      if(existing){existing.time=t;existing.task=task;existing.color=selColor;}
+      else{if(!S.timeBlocks)S.timeBlocks=[];S.timeBlocks.push({id:Date.now(),time:t,task:task,color:selColor});}
+      S.timeBlocks.sort(function(a,b2){return a.time.localeCompare(b2.time);});
+      closeModal();renderView();
+    }));
+    br.appendChild(btn('Cancel','btn-ghost',closeModal));
+    body.appendChild(br);
+  });
+}
+function wTimeBlock(){
+  if(!S.timeBlocks)S.timeBlocks=[];
+  var c2=card({padding:'20px'});
+  var ch=row('space-between');ch.style.marginBottom='14px';
+  ch.appendChild(hx('h2',{fontFamily:'Lora,Georgia,serif',fontSize:'16px',color:'var(--text)'},'⏰ Time Block'));
+  ch.appendChild(btn('+ Add','btn-primary btn-sm',function(){showAddBlock(null);}));
+  c2.appendChild(ch);
+  if(!S.timeBlocks.length){var empty=d({padding:'16px',borderRadius:'10px',background:'var(--bg-alt)',border:'1px solid var(--border)',fontSize:'13px',color:'var(--muted)',textAlign:'center'});empty.textContent='No blocks yet — tap + Add to create your first time block.';c2.appendChild(empty);return c2;}
+  S.timeBlocks.forEach(function(block){
+    var r=d({display:'flex',alignItems:'center',gap:'10px',padding:'10px 12px',borderRadius:'10px',background:block.color,border:'1px solid var(--border)',marginBottom:'8px'});
+    var timeLbl=d({fontSize:'12px',color:'var(--text)',fontWeight:'700',width:'42px',flexShrink:'0'});timeLbl.textContent=block.time;
+    var taskLbl=d({flex:'1',fontSize:'13px',color:'var(--text)'});taskLbl.textContent=block.task||'—';
+    var editBtn=(function(bl){var b=document.createElement('button');b.className='icon-btn';b.title='Edit';b.innerHTML=ic('edit',12,'var(--muted)');b.onclick=function(){showAddBlock(bl);};return b;})(block);
+    var delBtn=(function(bl){var b=document.createElement('button');b.className='icon-btn';b.title='Delete';b.innerHTML=ic('trash',12,'var(--rose)');b.onclick=function(){S.timeBlocks=S.timeBlocks.filter(function(x){return x.id!==bl.id;});renderView();};return b;})(block);
+    r.appendChild(timeLbl);r.appendChild(taskLbl);r.appendChild(editBtn);r.appendChild(delBtn);
+    c2.appendChild(r);
   });
   return c2;
 }
@@ -1137,7 +1161,7 @@ function goTo(v) {
   renderView();
 }
 function renderView() {   scheduleNotifications();   var m = document.getElementById('main'); m.innerHTML='';
-  var fn = {dashboard:vDashboard,tasks:vTasks,projects:vProjects,focus:vFocus,reminders:vReminders,sleep:vSleep,toolkit:vToolkit,settings:vSettings}[S.view];
+  var fn = {dashboard:vDashboard,tasks:vTasks,projects:vProjects,focus:vFocus,reminders:vReminders,sleep:vSleep,toolkit:vToolkit,settings:vSettings,checklists:vChecklists,voice:vVoiceNotes,meetings:vMeetings}[S.view];
   if(fn) m.appendChild(fn());
   scheduleSync();
 }
@@ -1275,6 +1299,31 @@ function openGCalReminder(r) {
   var now=new Date(); var start=new Date();   if(r.time&&r.time.includes(':')){ var parts=r.time.split(':'); start.setHours(+parts[0],+parts[1],0); }
   if(start<now) start.setDate(start.getDate()+1);
   var end=new Date(start.getTime()+15*60000);   function fmt(d){return d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate())+'T'+pad2(d.getHours())+pad2(d.getMinutes())+'00Z';}   var url='https://calendar.google.com/calendar/r/eventedit?text='+encodeURIComponent(r.emoji+' '+r.label)+'&dates='+fmt(start)+'/'+fmt(end)+'&details='+encodeURIComponent('Created by Focusly ADHD Support')+'&recur=RRULE:FREQ='+(r.repeat==='Daily'?'DAILY':r.repeat==='Weekdays'?'WEEKLY;BYDAY=MO,TU,WE,TH,FR':'WEEKLY');   window.open(url,'_blank');
+}
+
+// ════════════════════════════════════════════════════════
+//  VIEW: CHECKLISTS / VOICE / MEETINGS
+// ════════════════════════════════════════════════════════
+function vChecklists(){
+  var s=sec();
+  s.appendChild(hx('h1',{fontFamily:'Lora,Georgia,serif',fontSize:'26px',fontWeight:'700',color:'var(--text)',marginBottom:'4px'},'✅ Checklists'));
+  s.appendChild(p({fontSize:'13px',color:'var(--muted)',marginBottom:'20px'},'Holiday packing lists, day trips, routines, and more.'));
+  s.appendChild(wChecklist());
+  return s;
+}
+function vVoiceNotes(){
+  var s=sec();
+  s.appendChild(hx('h1',{fontFamily:'Lora,Georgia,serif',fontSize:'26px',fontWeight:'700',color:'var(--text)',marginBottom:'4px'},'🎙️ Voice Notes'));
+  s.appendChild(p({fontSize:'13px',color:'var(--muted)',marginBottom:'20px'},'Record thoughts, reminders, and ideas on the go.'));
+  s.appendChild(wVoice());
+  return s;
+}
+function vMeetings(){
+  var s=sec();
+  s.appendChild(hx('h1',{fontFamily:'Lora,Georgia,serif',fontSize:'26px',fontWeight:'700',color:'var(--text)',marginBottom:'4px'},'📋 Meeting Recorder'));
+  s.appendChild(p({fontSize:'13px',color:'var(--muted)',marginBottom:'20px'},'Record meetings and get a live transcript.'));
+  s.appendChild(wMeeting());
+  return s;
 }
 
 // ════════════════════════════════════════════════════════
