@@ -491,7 +491,7 @@ var IC = {   info:    '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2=
 // ════════════════════════════════════════════════════════
 //  CLOUD SYNC (JSONBin.io — free cross-device sync)
 // ════════════════════════════════════════════════════════
-var JSONBIN_API='https://api.jsonbin.io/v3/b'; function getSyncState(){return JSON.parse(localStorage.getItem('focusly_sync')||'null');} function setSyncState(st){if(st)localStorage.setItem('focusly_sync',JSON.stringify(st));else localStorage.removeItem('focusly_sync');} function gatherSaveData(){return{v:4,tasks:S.tasks,captures:S.captures.map(function(c){return{id:c.id,text:c.text,file:c.file?{name:c.file.name,type:c.file.type}:undefined};}),reminders:S.reminders,projects:S.projects,focus:{sound:S.focus.sound,dur:S.focus.dur,brk:S.focus.brk},sleep:S.sleep,habits:S.habits||[],moodLog:S.moodLog||[],water:S.water||0,intention:S.intention||'',musicEmbed:S.musicEmbed||'',energy:S.energy,timeBlocks:S.timeBlocks||[],medsLog:S.medsLog||{},weatherMood:S.weatherMood||'',streaks:S.streaks||{focus:0,days:0},checklists:S.checklists||[],widgets:getActiveWidgets(),navOrder:NAV_ORDER,savedAt:new Date().toISOString()};} function restoreData(d){if(!d||!d.v)return;['tasks','captures','reminders','projects','sleep','habits','moodLog','timeBlocks','medsLog','checklists'].forEach(function(k){if(d[k])S[k]=d[k];});if(d.focus){S.focus.sound=d.focus.sound;S.focus.dur=d.focus.dur;S.focus.brk=d.focus.brk;}if(d.water!==undefined)S.water=d.water;if(d.intention)S.intention=d.intention;if(d.musicEmbed)S.musicEmbed=d.musicEmbed;if(d.energy)S.energy=d.energy;if(d.weatherMood)S.weatherMood=d.weatherMood;if(d.streaks)S.streaks=d.streaks;if(d.widgets)saveWidgets(d.widgets);if(d.navOrder){NAV_ORDER=d.navOrder;localStorage.setItem('focusly_nav_order',JSON.stringify(NAV_ORDER));}} function saveMediaLocally(){try{localStorage.setItem('focusly_voice',JSON.stringify((S.voiceNotes||[]).slice(0,20)));localStorage.setItem('focusly_meetings',JSON.stringify((S.meetings||[]).slice(0,10)));}catch(e){}} function loadMediaLocally(){try{S.voiceNotes=JSON.parse(localStorage.getItem('focusly_voice')||'[]');S.meetings=JSON.parse(localStorage.getItem('focusly_meetings')||'[]');}catch(e){S.voiceNotes=[];S.meetings=[];}} async function cloudPush(){
+var JSONBIN_API='https://api.jsonbin.io/v3/b'; function getSyncState(){return JSON.parse(localStorage.getItem('focusly_sync')||'null');} function setSyncState(st){if(st)localStorage.setItem('focusly_sync',JSON.stringify(st));else localStorage.removeItem('focusly_sync');} function gatherSaveData(){return{v:4,tasks:S.tasks,captures:S.captures.map(function(c){return{id:c.id,text:c.text,file:c.file?{name:c.file.name,type:c.file.type}:undefined};}),reminders:S.reminders,projects:S.projects,focus:{sound:S.focus.sound,dur:S.focus.dur,brk:S.focus.brk},sleep:S.sleep,habits:S.habits||[],moodLog:S.moodLog||[],water:S.water||0,intention:S.intention||'',musicEmbed:S.musicEmbed||'',appleMusicEmbed:S.appleMusicEmbed||'',energy:S.energy,timeBlocks:S.timeBlocks||[],medsLog:S.medsLog||{},weatherMood:S.weatherMood||'',streaks:S.streaks||{focus:0,days:0},checklists:S.checklists||[],widgets:getActiveWidgets(),navOrder:NAV_ORDER,savedAt:new Date().toISOString()};} function restoreData(d){if(!d||!d.v)return;['tasks','captures','reminders','projects','sleep','habits','moodLog','timeBlocks','medsLog','checklists'].forEach(function(k){if(d[k])S[k]=d[k];});if(d.focus){S.focus.sound=d.focus.sound;S.focus.dur=d.focus.dur;S.focus.brk=d.focus.brk;}if(d.water!==undefined)S.water=d.water;if(d.intention)S.intention=d.intention;if(d.musicEmbed)S.musicEmbed=d.musicEmbed;if(d.appleMusicEmbed)S.appleMusicEmbed=d.appleMusicEmbed;if(d.energy)S.energy=d.energy;if(d.weatherMood)S.weatherMood=d.weatherMood;if(d.streaks)S.streaks=d.streaks;if(d.widgets)saveWidgets(d.widgets);if(d.navOrder){NAV_ORDER=d.navOrder;localStorage.setItem('focusly_nav_order',JSON.stringify(NAV_ORDER));}} function saveMediaLocally(){try{localStorage.setItem('focusly_voice',JSON.stringify((S.voiceNotes||[]).slice(0,20)));localStorage.setItem('focusly_meetings',JSON.stringify((S.meetings||[]).slice(0,10)));}catch(e){}} function loadMediaLocally(){try{S.voiceNotes=JSON.parse(localStorage.getItem('focusly_voice')||'[]');S.meetings=JSON.parse(localStorage.getItem('focusly_meetings')||'[]');}catch(e){S.voiceNotes=[];S.meetings=[];}} async function cloudPush(){
   var data=gatherSaveData(), sync=getSyncState();
   if(!sync||!sync.apiKey) return{ok:false,error:'Not configured'};
   var isAuthErr=function(msg){return msg&&(msg.toLowerCase().includes('invalid')||msg.toLowerCase().includes('access')||msg.toLowerCase().includes('belong')||msg.toLowerCase().includes('unauthori'));};
@@ -917,28 +917,42 @@ function wIntention(){   if(!S.intention)S.intention='';   var c2=card({padding:
   return c2;
 }
 function wMusic(){
+  if(!S.musicEmbed)S.musicEmbed='';
+  if(!S.appleMusicEmbed)S.appleMusicEmbed='';
   var c2=card({padding:'20px'});
-  c2.appendChild(hx('h2',{fontFamily:'Lora,Georgia,serif',fontSize:'16px',marginBottom:'8px',color:'var(--text)'},'🎵 Music'));
+  c2.appendChild(hx('h2',{fontFamily:'Lora,Georgia,serif',fontSize:'16px',marginBottom:'12px',color:'var(--text)'},'🎵 Music'));
   var SVCS=[{id:'spotify',label:'Spotify',url:'https://open.spotify.com',emoji:'💚'},{id:'apple',label:'Apple Music',url:'https://music.apple.com',emoji:'🎵'},{id:'youtube',label:'YouTube Music',url:'https://music.youtube.com',emoji:'▶️'},{id:'amazon',label:'Amazon Music',url:'https://music.amazon.com',emoji:'🎶'},{id:'tidal',label:'Tidal',url:'https://tidal.com',emoji:'🌊'},{id:'deezer',label:'Deezer',url:'https://deezer.com',emoji:'🎧'}];
   var defId=localStorage.getItem('focusly_music_player')||'';
   var active=SVCS.find(function(s){return s.id===defId;})||null;
   if(active){
     var bigBtn=document.createElement('a');bigBtn.href=active.url;bigBtn.target='_blank';bigBtn.rel='noopener';
-    bigBtn.style.cssText='display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;border:2px solid var(--accent);background:var(--alight);text-decoration:none;margin-bottom:10px';
-    bigBtn.innerHTML='<span style="font-size:28px">'+active.emoji+'</span><span style="font-size:15px;font-weight:600;color:var(--text)">Open '+active.label+'</span>';
+    bigBtn.style.cssText='display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:2px solid var(--accent);background:var(--alight);text-decoration:none;margin-bottom:12px';
+    bigBtn.innerHTML='<span style="font-size:24px">'+active.emoji+'</span><span style="font-size:14px;font-weight:600;color:var(--text)">Open '+active.label+'</span>';
     c2.appendChild(bigBtn);
-  } else {
-    var noSvc=d({padding:'12px 14px',borderRadius:'10px',background:'var(--bg)',border:'1px solid var(--border)',fontSize:'13px',color:'var(--muted)',marginBottom:'10px'});
-    noSvc.textContent='No music app selected — choose one in Settings → Default Music Player.';
-    c2.appendChild(noSvc);
   }
-  if(!S.musicEmbed)S.musicEmbed='';
-  var embedRow=d({display:'flex',gap:'8px',alignItems:'center',marginTop:'10px'});
-  var embedInp=inp('Spotify playlist/track URL...',S.musicEmbed);embedInp.style.flex='1';
-  embedRow.appendChild(embedInp);
-  embedRow.appendChild(btn('Embed','btn-primary btn-sm',function(){var url=embedInp.value.trim();if(url.includes('spotify.com')){S.musicEmbed=url.replace('open.spotify.com/','open.spotify.com/embed/');renderView();}else alert('Please paste a Spotify URL.');}));
-  c2.appendChild(embedRow);
-  if(S.musicEmbed){var frame=document.createElement('iframe');frame.src=S.musicEmbed;frame.width='100%';frame.height='152';frame.style.cssText='border-radius:12px;margin-top:10px;border:none';frame.allow='autoplay;clipboard-write;encrypted-media;fullscreen;picture-in-picture';frame.loading='lazy';c2.appendChild(frame);}
+  if(S.musicEmbed){
+    var sf=document.createElement('iframe');sf.src=S.musicEmbed;sf.width='100%';sf.height='152';
+    sf.style.cssText='border-radius:12px;margin-bottom:10px;border:none;display:block';
+    sf.allow='autoplay;clipboard-write;encrypted-media;fullscreen;picture-in-picture';sf.loading='lazy';
+    c2.appendChild(sf);
+  }
+  if(S.appleMusicEmbed){
+    var af=document.createElement('iframe');af.src=S.appleMusicEmbed;af.width='100%';af.height='150';
+    af.style.cssText='border-radius:12px;margin-bottom:10px;border:none;display:block';
+    af.allow='autoplay *; encrypted-media *; fullscreen *; clipboard-write';
+    af.setAttribute('sandbox','allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation');
+    af.loading='lazy';c2.appendChild(af);
+  }
+  var hasEmbed=S.musicEmbed||S.appleMusicEmbed;
+  if(!hasEmbed&&!active){
+    var hint=d({padding:'14px',borderRadius:'10px',background:'var(--bg-alt)',border:'1px solid var(--border)',fontSize:'13px',color:'var(--muted)',textAlign:'center'});
+    hint.innerHTML='No music configured.<br><span style="font-size:12px">Go to <strong>Settings → Music</strong> to add a playlist or choose your default app.</span>';
+    c2.appendChild(hint);
+  } else if(!hasEmbed){
+    var hint2=d({padding:'10px 14px',borderRadius:'8px',background:'var(--bg-alt)',fontSize:'12px',color:'var(--muted)'});
+    hint2.innerHTML='💡 Add a playlist in <strong>Settings → Music</strong> to embed it here.';
+    c2.appendChild(hint2);
+  }
   return c2;
 }
 function wQuote(){
@@ -1666,6 +1680,76 @@ function vSettings(){
     });
     mpCard.appendChild(mgrid);
     s.appendChild(mpCard);
+  })();
+
+  // Music playlist embeds
+  (function(){
+    if(!S.musicEmbed)S.musicEmbed='';
+    if(!S.appleMusicEmbed)S.appleMusicEmbed='';
+    var emCard=card({padding:'20px'});
+    emCard.appendChild(hx('h3',{fontFamily:'Lora,Georgia,serif',fontSize:'16px',marginBottom:'4px',color:'var(--text)'},'🎶 Playlist Embeds'));
+    emCard.appendChild(p({fontSize:'13px',color:'var(--muted)',marginBottom:'16px'},'Paste a Spotify or Apple Music playlist link to embed it in your Music widget.'));
+
+    // ── Spotify ────────────────────────────────────────
+    var spSec=d({marginBottom:'18px'});
+    var spHead=d({display:'flex',alignItems:'center',gap:'8px',marginBottom:'8px'});
+    spHead.innerHTML='<span style="font-size:18px">💚</span><span style="font-size:14px;font-weight:600;color:var(--text)">Spotify</span>';
+    spSec.appendChild(spHead);
+    var spRow=d({display:'flex',gap:'8px',alignItems:'center'});
+    var spInp=inp('Paste Spotify playlist or track URL…',S.musicEmbed?S.musicEmbed.replace('open.spotify.com/embed/','open.spotify.com/'):'');
+    spInp.style.flex='1';spRow.appendChild(spInp);
+    spRow.appendChild(btn('Save','btn-primary btn-sm',function(){
+      var url=spInp.value.trim();
+      if(!url){S.musicEmbed='';renderView();return;}
+      if(!url.includes('spotify.com')){alert('Please paste a Spotify URL.');return;}
+      S.musicEmbed=url.replace('open.spotify.com/','open.spotify.com/embed/');
+      renderView();
+    }));
+    if(S.musicEmbed){
+      spRow.appendChild(btn('✕','btn-ghost btn-sm',function(){S.musicEmbed='';renderView();}));
+    }
+    spSec.appendChild(spRow);
+    if(S.musicEmbed){
+      var spPrev=d({marginTop:'10px',padding:'10px',borderRadius:'10px',background:'var(--bg-alt)',border:'1px solid var(--border)'});
+      var sf2=document.createElement('iframe');sf2.src=S.musicEmbed;sf2.width='100%';sf2.height='80';
+      sf2.style.cssText='border-radius:8px;border:none;display:block';
+      sf2.allow='autoplay;clipboard-write;encrypted-media;fullscreen;picture-in-picture';sf2.loading='lazy';
+      spPrev.appendChild(sf2);spSec.appendChild(spPrev);
+    }
+    emCard.appendChild(spSec);
+
+    // ── Apple Music ────────────────────────────────────
+    var apSec=d({});
+    var apHead=d({display:'flex',alignItems:'center',gap:'8px',marginBottom:'8px'});
+    apHead.innerHTML='<span style="font-size:18px">🎵</span><span style="font-size:14px;font-weight:600;color:var(--text)">Apple Music</span>';
+    apSec.appendChild(apHead);
+    var apTip=p({fontSize:'12px',color:'var(--muted)',marginBottom:'8px'},'Find a playlist in Apple Music, tap ··· → Share → Copy Link, then paste below.');
+    apSec.appendChild(apTip);
+    var apRow=d({display:'flex',gap:'8px',alignItems:'center'});
+    var rawApple=S.appleMusicEmbed?S.appleMusicEmbed.replace('embed.music.apple.com/','music.apple.com/'):'';
+    var apInp=inp('Paste Apple Music playlist URL…',rawApple);
+    apInp.style.flex='1';apRow.appendChild(apInp);
+    apRow.appendChild(btn('Save','btn-primary btn-sm',function(){
+      var url=apInp.value.trim();
+      if(!url){S.appleMusicEmbed='';renderView();return;}
+      if(!url.includes('music.apple.com')){alert('Please paste an Apple Music URL.');return;}
+      S.appleMusicEmbed=url.replace('music.apple.com/','embed.music.apple.com/');
+      renderView();
+    }));
+    if(S.appleMusicEmbed){
+      apRow.appendChild(btn('✕','btn-ghost btn-sm',function(){S.appleMusicEmbed='';renderView();}));
+    }
+    apSec.appendChild(apRow);
+    if(S.appleMusicEmbed){
+      var apPrev=d({marginTop:'10px',padding:'10px',borderRadius:'10px',background:'var(--bg-alt)',border:'1px solid var(--border)'});
+      var af2=document.createElement('iframe');af2.src=S.appleMusicEmbed;af2.width='100%';af2.height='80';
+      af2.style.cssText='border-radius:8px;border:none;display:block';
+      af2.allow='autoplay *; encrypted-media *; fullscreen *; clipboard-write';
+      af2.setAttribute('sandbox','allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation');
+      af2.loading='lazy';apPrev.appendChild(af2);apSec.appendChild(apPrev);
+    }
+    emCard.appendChild(apSec);
+    s.appendChild(emCard);
   })();
 
   // Cloud sync card
