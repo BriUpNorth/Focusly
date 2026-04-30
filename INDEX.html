@@ -31,6 +31,21 @@
     --risk-high: #b82828;
     --shadow: 0 2px 16px rgba(26,107,107,0.10);
     --shadow-lg: 0 8px 40px rgba(26,107,107,0.15);
+    /* Semantic aliases */
+    --bg: #faf9f6;
+    --surface: #ffffff;
+    --text: #1c2b2b;
+    --accent: #1a6b6b;
+  }
+  [data-theme="dark"] {
+    --bg: #121c1c;
+    --surface: #1e2e2e;
+    --text: #e8f4f4;
+    --border: #2a4040;
+    --soft: #5a8080;
+    --teal-pale: #1a3030;
+    --cream: #121c1c;
+    --accent: #2a8a8a;
   }
 
 - { box-sizing: border-box; margin: 0; padding: 0; }
@@ -859,6 +874,48 @@ margin: 0 auto 20px;
   font-weight: 600;
 }
 
+
+/* View-specific body chart controls */
+.sit-ctrl-side { display: none; }
+.std-ctrl-side { display: none; }
+
+/* Clinical observation info tooltips */
+.obs-info-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid var(--teal); background: var(--teal-pale);
+  color: var(--teal); font-size: 0.7rem; font-weight: 700;
+  cursor: pointer; margin-left: 6px; vertical-align: middle;
+  position: relative;
+}
+.obs-info-btn .obs-tip {
+  display: none; position: absolute; left: 24px; top: 50%;
+  transform: translateY(-50%); z-index: 200;
+  background: #1a3a3a; color: #e8f5f5; font-size: 0.72rem;
+  font-weight: 400; line-height: 1.5; padding: 8px 12px;
+  border-radius: 8px; width: 220px; pointer-events: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+.obs-info-btn:hover .obs-tip { display: block; }
+
+/* ── Settings screen ── */
+.settings-section { margin-bottom: 20px; }
+.settings-section-title { font-size: 0.72rem; font-weight: 700; color: var(--soft); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+.settings-toggle { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: var(--surface); border-radius: 10px; margin-bottom: 8px; }
+.settings-toggle label { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+.toggle-switch { position: relative; width: 42px; height: 24px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 24px; cursor: pointer; transition: 0.2s; }
+.toggle-slider:before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: 0.2s; }
+.toggle-switch input:checked + .toggle-slider { background: var(--accent); }
+.toggle-switch input:checked + .toggle-slider:before { transform: translateX(18px); }
+.section-toggle-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface); border-radius: 10px; margin-bottom: 6px; }
+.section-toggle-row label { flex: 1; font-size: 0.85rem; color: var(--text); }
+.settings-int-row { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; background: var(--surface); border-radius: 10px; margin-bottom: 8px; }
+.settings-int-row label { font-size: 0.78rem; font-weight: 600; color: var(--soft); text-transform: uppercase; letter-spacing: 0.08em; }
+.settings-int-row input { border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; background: var(--bg); color: var(--text); outline: none; }
+.settings-int-row input:focus { border-color: var(--accent); }
+.settings-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
 </style>
 
 </head>
@@ -938,6 +995,10 @@ margin: 0 auto 20px;
       <div><div class="ac-title" style="font-size:0.82rem;">Recommendations</div></div>
     </div>
   </div>
+</div>
+
+<div style="margin-top:14px;margin-bottom:2px;">
+  <button class="btn" onclick="goToSettings()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 14px;">⚙️ Settings</button>
 </div>
 
 <div class="stats-row" id="stats-row">
@@ -1560,11 +1621,12 @@ margin: 0 auto 20px;
     <div class="checkbox-group" id="hip-detail">
       <label class="checkbox-pill"><input type="checkbox" value="Windswept L" onchange="mutualExclude(this,'Windswept R')">Windswept L</label>
       <label class="checkbox-pill"><input type="checkbox" value="Windswept R" onchange="mutualExclude(this,'Windswept L')">Windswept R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Adduction">Adduction</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Abduction">Abduction</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Flexion contracture">Flex contracture</label>
-      <label class="checkbox-pill"><input type="checkbox" value="IR">IR</label>
-      <label class="checkbox-pill"><input type="checkbox" value="ER">ER</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Adduction" onchange="mutualExclude(this,'Abduction')">Adduction</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Abduction" onchange="mutualExclude(this,'Adduction')">Abduction</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Flex contracture R">Flex contracture R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Flex contracture L">Flex contracture L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="IR" onchange="mutualExclude(this,'ER')">IR</label>
+      <label class="checkbox-pill"><input type="checkbox" value="ER" onchange="mutualExclude(this,'IR')">ER</label>
     </div>
   </div>
   <div class="form-group" style="margin-top:10px;">
@@ -1629,14 +1691,14 @@ margin: 0 auto 20px;
   <div class="form-group" style="margin-top:12px;">
     <label>Knee Details</label>
     <div class="checkbox-group" id="knee-detail">
-      <label class="checkbox-pill"><input type="checkbox" value="Knee flexion contracture R">Flex contracture R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Knee flexion contracture L">Flex contracture L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Knee hyperextension R">Hyperextension R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Knee hyperextension L">Hyperextension L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Valgus R">Valgus R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Valgus L">Valgus L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Varus R">Varus R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Varus L">Varus L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Knee flexion contracture R" onchange="mutualExclude(this,'Knee hyperextension R')">Flex contracture R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Knee flexion contracture L" onchange="mutualExclude(this,'Knee hyperextension L')">Flex contracture L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Knee hyperextension R" onchange="mutualExclude(this,'Knee flexion contracture R')">Hyperextension R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Knee hyperextension L" onchange="mutualExclude(this,'Knee flexion contracture L')">Hyperextension L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Valgus R" onchange="mutualExclude(this,'Varus R')">Valgus R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Valgus L" onchange="mutualExclude(this,'Varus L')">Valgus L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Varus R" onchange="mutualExclude(this,'Valgus R')">Varus R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Varus L" onchange="mutualExclude(this,'Valgus L')">Varus L</label>
     </div>
   </div>
   <div class="form-group" style="margin-top:12px;">
@@ -1663,12 +1725,12 @@ margin: 0 auto 20px;
   <div class="form-group" style="margin-top:12px;">
     <label>Foot Details</label>
     <div class="checkbox-group" id="foot-detail">
-      <label class="checkbox-pill"><input type="checkbox" value="Equinus R">Equinus R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Equinus L">Equinus L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Valgus R">Valgus R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Valgus L">Valgus L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Varus R">Varus R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Varus L">Varus L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Equinus R" onchange="mutualExclude(this,'Valgus R');mutualExclude(this,'Varus R')">Equinus R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Equinus L" onchange="mutualExclude(this,'Valgus L');mutualExclude(this,'Varus L')">Equinus L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Valgus R" onchange="mutualExclude(this,'Equinus R');mutualExclude(this,'Varus R')">Valgus R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Valgus L" onchange="mutualExclude(this,'Equinus L');mutualExclude(this,'Varus L')">Valgus L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Varus R" onchange="mutualExclude(this,'Equinus R');mutualExclude(this,'Valgus R')">Varus R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Varus L" onchange="mutualExclude(this,'Equinus L');mutualExclude(this,'Valgus L')">Varus L</label>
       <label class="checkbox-pill"><input type="checkbox" value="Pes planus R">Flat foot R</label>
       <label class="checkbox-pill"><input type="checkbox" value="Pes planus L">Flat foot L</label>
       <label class="checkbox-pill"><input type="checkbox" value="Cavus R">Cavus R</label>
@@ -2270,14 +2332,14 @@ margin: 0 auto 20px;
   </div>
   <div class="form-group" style="margin-top:12px;"><label>Hip Details</label>
     <div class="checkbox-group" id="sit-hip-detail">
-      <label class="checkbox-pill"><input type="checkbox" value="Adducted R">Adducted R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Adducted L">Adducted L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Abducted R">Abducted R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Abducted L">Abducted L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="IR R">IR R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="IR L">IR L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="ER R">ER R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="ER L">ER L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Adducted R" onchange="mutualExclude(this,'Abducted R')">Adducted R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Adducted L" onchange="mutualExclude(this,'Abducted L')">Adducted L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Abducted R" onchange="mutualExclude(this,'Adducted R')">Abducted R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Abducted L" onchange="mutualExclude(this,'Adducted L')">Abducted L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="IR R" onchange="mutualExclude(this,'ER R')">IR R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="IR L" onchange="mutualExclude(this,'ER L')">IR L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="ER R" onchange="mutualExclude(this,'IR R')">ER R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="ER L" onchange="mutualExclude(this,'IR L')">ER L</label>
       <label class="checkbox-pill"><input type="checkbox" value="Windswept R" onchange="mutualExclude(this,'Windswept L')">Windswept R</label>
       <label class="checkbox-pill"><input type="checkbox" value="Windswept L" onchange="mutualExclude(this,'Windswept R')">Windswept L</label>
     </div>
@@ -2297,12 +2359,14 @@ margin: 0 auto 20px;
   </div>
   <div class="form-group" style="margin-top:12px;"><label>Knee Details</label>
     <div class="checkbox-group" id="sit-knee-detail">
-      <label class="checkbox-pill"><input type="checkbox" value="Knee flexion contracture R">Flex contracture R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Knee flexion contracture L">Flex contracture L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Valgus R">Valgus R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Valgus L">Valgus L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Varus R">Varus R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Varus L">Varus L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Knee flexion contracture R" onchange="mutualExclude(this,'Knee hyperextension R')">Flex contracture R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Knee flexion contracture L" onchange="mutualExclude(this,'Knee hyperextension L')">Flex contracture L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Knee hyperextension R" onchange="mutualExclude(this,'Knee flexion contracture R')">Hyperextension R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Knee hyperextension L" onchange="mutualExclude(this,'Knee flexion contracture L')">Hyperextension L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Valgus R" onchange="mutualExclude(this,'Varus R')">Valgus R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Valgus L" onchange="mutualExclude(this,'Varus L')">Valgus L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Varus R" onchange="mutualExclude(this,'Valgus R')">Varus R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Varus L" onchange="mutualExclude(this,'Valgus L')">Varus L</label>
     </div>
   </div>
 </div>
@@ -2320,12 +2384,12 @@ margin: 0 auto 20px;
   </div>
   <div class="form-group" style="margin-top:12px;"><label>Foot Details</label>
     <div class="checkbox-group" id="sit-foot-detail">
-      <label class="checkbox-pill"><input type="checkbox" value="Equinus R">Equinus R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Equinus L">Equinus L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Valgus R">Valgus R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Valgus L">Valgus L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Varus R">Varus R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Varus L">Varus L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Equinus R" onchange="mutualExclude(this,'Valgus R');mutualExclude(this,'Varus R')">Equinus R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Equinus L" onchange="mutualExclude(this,'Valgus L');mutualExclude(this,'Varus L')">Equinus L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Valgus R" onchange="mutualExclude(this,'Equinus R');mutualExclude(this,'Varus R')">Valgus R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Valgus L" onchange="mutualExclude(this,'Equinus L');mutualExclude(this,'Varus L')">Valgus L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Varus R" onchange="mutualExclude(this,'Equinus R');mutualExclude(this,'Valgus R')">Varus R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Varus L" onchange="mutualExclude(this,'Equinus L');mutualExclude(this,'Valgus L')">Varus L</label>
       <label class="checkbox-pill"><input type="checkbox" value="Pes planus R">Flat foot R</label>
       <label class="checkbox-pill"><input type="checkbox" value="Pes planus L">Flat foot L</label>
     </div>
@@ -2498,37 +2562,37 @@ margin: 0 auto 20px;
     <div class="bc-group">
       <button class="bc-group-hd" onclick="toggleBcGroup(this)"><span>🦴 Trunk &amp; Pelvis</span><span class="bc-group-arrow">▾</span></button>
       <div class="bc-group-body">
-        <div class="bc-control">
+        <div class="bc-control sit-ctrl-fronttop">
           <div class="bc-ctrl-label"><span>Pelvic Obliquity</span><span class="bc-val" id="sit-lbl-obliquity">Level</span></div>
           <input type="range" id="sit-ctrl-obliquity" min="-30" max="30" value="0" step="1" class="bc-slider" oninput="updateSitChart()">
           <div class="bc-ctrl-hints"><span>R High</span><span>Level</span><span>L High</span></div>
         </div>
-        <div class="bc-control">
+        <div class="bc-control sit-ctrl-side">
           <div class="bc-ctrl-label"><span>Pelvic Ant/Post Tilt</span><span class="bc-val" id="sit-lbl-tilt">Neutral</span></div>
           <input type="range" id="sit-ctrl-tilt" min="-25" max="25" value="0" step="1" class="bc-slider" oninput="updateSitChart()">
           <div class="bc-ctrl-hints"><span>Post tilt</span><span>Neutral</span><span>Ant tilt</span></div>
         </div>
-        <div class="bc-control">
+        <div class="bc-control sit-ctrl-side">
           <div class="bc-ctrl-label"><span>Trunk Flex / Extension</span><span class="bc-val" id="sit-lbl-trunkflex">Neutral</span></div>
           <input type="range" id="sit-ctrl-trunkflex" min="-30" max="50" value="0" step="1" class="bc-slider" oninput="updateSitChart()">
           <div class="bc-ctrl-hints"><span>Extension</span><span>Neutral</span><span>Flexion</span></div>
         </div>
-        <div class="bc-control">
+        <div class="bc-control sit-ctrl-side">
           <div class="bc-ctrl-label"><span>Neck Flex / Extension</span><span class="bc-val" id="sit-lbl-neckflex">Neutral</span></div>
           <input type="range" id="sit-ctrl-neckflex" min="-35" max="45" value="0" step="1" class="bc-slider" oninput="updateSitChart()">
-          <div class="bc-ctrl-hints"><span>Flexion</span><span>Neutral</span><span>Extension</span></div>
+          <div class="bc-ctrl-hints"><span>Extension</span><span>Neutral</span><span>Flexion</span></div>
         </div>
-        <div class="bc-control">
+        <div class="bc-control sit-ctrl-fronttop">
           <div class="bc-ctrl-label"><span>Pelvic Rotation</span><span class="bc-val" id="sit-lbl-rotation">Neutral</span></div>
           <input type="range" id="sit-ctrl-rotation" min="-30" max="30" value="0" step="1" class="bc-slider" oninput="updateSitChart()">
           <div class="bc-ctrl-hints"><span>R fwd</span><span>Neutral</span><span>L fwd</span></div>
         </div>
-        <div class="bc-control">
+        <div class="bc-control sit-ctrl-fronttop">
           <div class="bc-ctrl-label"><span>Trunk Lateral Lean</span><span class="bc-val" id="sit-lbl-trunk">Neutral</span></div>
           <input type="range" id="sit-ctrl-trunk" min="-25" max="25" value="0" step="1" class="bc-slider" oninput="updateSitChart()">
           <div class="bc-ctrl-hints"><span>Lean R</span><span>Neutral</span><span>Lean L</span></div>
         </div>
-        <div class="bc-control">
+        <div class="bc-control sit-ctrl-fronttop">
           <div class="bc-ctrl-label"><span>Trunk Rotation</span><span class="bc-val" id="sit-lbl-trot">Neutral</span></div>
           <input type="range" id="sit-ctrl-trot" min="-30" max="30" value="0" step="1" class="bc-slider" oninput="updateSitChart()">
           <div class="bc-ctrl-hints"><span>R fwd</span><span>Neutral</span><span>L fwd</span></div>
@@ -2720,10 +2784,14 @@ margin: 0 auto 20px;
   </div>
   <div class="form-group" style="margin-top:12px;"><label>Hip Details</label>
     <div class="checkbox-group" id="std-hip-detail">
-      <label class="checkbox-pill"><input type="checkbox" value="Adducted R">Adducted R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Adducted L">Adducted L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Abducted R">Abducted R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Abducted L">Abducted L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Adducted R" onchange="mutualExclude(this,'Abducted R')">Adducted R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Adducted L" onchange="mutualExclude(this,'Abducted L')">Adducted L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Abducted R" onchange="mutualExclude(this,'Adducted R')">Abducted R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Abducted L" onchange="mutualExclude(this,'Adducted L')">Abducted L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="IR R" onchange="mutualExclude(this,'ER R')">IR R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="IR L" onchange="mutualExclude(this,'ER L')">IR L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="ER R" onchange="mutualExclude(this,'IR R')">ER R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="ER L" onchange="mutualExclude(this,'IR L')">ER L</label>
       <label class="checkbox-pill"><input type="checkbox" value="Scissoring gait">Scissoring</label>
       <label class="checkbox-pill"><input type="checkbox" value="Trendelenburg R">Trendelenburg R</label>
       <label class="checkbox-pill"><input type="checkbox" value="Trendelenburg L">Trendelenburg L</label>
@@ -2744,14 +2812,14 @@ margin: 0 auto 20px;
   </div>
   <div class="form-group" style="margin-top:12px;"><label>Knee Details</label>
     <div class="checkbox-group" id="std-knee-detail">
-      <label class="checkbox-pill"><input type="checkbox" value="Knee flexion contracture R">Flex contracture R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Knee flexion contracture L">Flex contracture L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Hyperextension R">Hyperextension R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Hyperextension L">Hyperextension L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Valgus R">Valgus R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Valgus L">Valgus L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Varus R">Varus R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Varus L">Varus L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Knee flexion contracture R" onchange="mutualExclude(this,'Hyperextension R')">Flex contracture R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Knee flexion contracture L" onchange="mutualExclude(this,'Hyperextension L')">Flex contracture L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Hyperextension R" onchange="mutualExclude(this,'Knee flexion contracture R')">Hyperextension R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Hyperextension L" onchange="mutualExclude(this,'Knee flexion contracture L')">Hyperextension L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Valgus R" onchange="mutualExclude(this,'Varus R')">Valgus R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Valgus L" onchange="mutualExclude(this,'Varus L')">Valgus L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Varus R" onchange="mutualExclude(this,'Valgus R')">Varus R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Varus L" onchange="mutualExclude(this,'Valgus L')">Varus L</label>
     </div>
   </div>
 </div>
@@ -2769,12 +2837,12 @@ margin: 0 auto 20px;
   </div>
   <div class="form-group" style="margin-top:12px;"><label>Foot Details</label>
     <div class="checkbox-group" id="std-foot-detail">
-      <label class="checkbox-pill"><input type="checkbox" value="Equinus R">Equinus R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Equinus L">Equinus L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Valgus R">Valgus R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Valgus L">Valgus L</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Varus R">Varus R</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Varus L">Varus L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Equinus R" onchange="mutualExclude(this,'Valgus R');mutualExclude(this,'Varus R')">Equinus R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Equinus L" onchange="mutualExclude(this,'Valgus L');mutualExclude(this,'Varus L')">Equinus L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Valgus R" onchange="mutualExclude(this,'Equinus R');mutualExclude(this,'Varus R')">Valgus R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Valgus L" onchange="mutualExclude(this,'Equinus L');mutualExclude(this,'Varus L')">Valgus L</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Varus R" onchange="mutualExclude(this,'Equinus R');mutualExclude(this,'Valgus R')">Varus R</label>
+      <label class="checkbox-pill"><input type="checkbox" value="Varus L" onchange="mutualExclude(this,'Equinus L');mutualExclude(this,'Valgus L')">Varus L</label>
       <label class="checkbox-pill"><input type="checkbox" value="Pes planus R">Flat foot R</label>
       <label class="checkbox-pill"><input type="checkbox" value="Pes planus L">Flat foot L</label>
       <label class="checkbox-pill"><input type="checkbox" value="Heel strike R">Heel strike R</label>
@@ -2887,30 +2955,30 @@ margin: 0 auto 20px;
     <div class="bc-group">
       <button class="bc-group-hd" onclick="toggleBcGroup(this)"><span>🦴 Trunk &amp; Pelvis</span><span class="bc-group-arrow">▾</span></button>
       <div class="bc-group-body">
-        <div class="bc-control">
+        <div class="bc-control std-ctrl-frontback">
           <div class="bc-ctrl-label"><span>Pelvic Obliquity</span><span class="bc-val" id="std-lbl-obliquity">Level</span></div>
           <input type="range" id="std-ctrl-obliquity" min="-30" max="30" value="0" step="1" class="bc-slider" oninput="updateStdChart()">
           <div class="bc-ctrl-hints"><span>R High</span><span>Level</span><span>L High</span></div>
         </div>
-        <div class="bc-control">
+        <div class="bc-control std-ctrl-frontback">
           <div class="bc-ctrl-label"><span>Trunk Lateral Lean</span><span class="bc-val" id="std-lbl-trunk">Neutral</span></div>
           <input type="range" id="std-ctrl-trunk" min="-25" max="25" value="0" step="1" class="bc-slider" oninput="updateStdChart()">
           <div class="bc-ctrl-hints"><span>Lean R</span><span>Neutral</span><span>Lean L</span></div>
         </div>
-        <div class="bc-control">
+        <div class="bc-control std-ctrl-frontback">
           <div class="bc-ctrl-label"><span>Trunk Rotation</span><span class="bc-val" id="std-lbl-trot">Neutral</span></div>
           <input type="range" id="std-ctrl-trot" min="-30" max="30" value="0" step="1" class="bc-slider" oninput="updateStdChart()">
           <div class="bc-ctrl-hints"><span>R fwd</span><span>Neutral</span><span>L fwd</span></div>
         </div>
-        <div class="bc-control">
+        <div class="bc-control std-ctrl-side">
           <div class="bc-ctrl-label"><span>Trunk Flex / Extension</span><span class="bc-val" id="std-lbl-trunkflex">Neutral</span></div>
           <input type="range" id="std-ctrl-trunkflex" min="-30" max="50" value="0" step="1" class="bc-slider" oninput="updateStdChart()">
-          <div class="bc-ctrl-hints"><span>Extension</span><span>Neutral</span><span>Flexion</span></div>
+          <div class="bc-ctrl-hints"><span>Flexion</span><span>Neutral</span><span>Extension</span></div>
         </div>
-        <div class="bc-control">
+        <div class="bc-control std-ctrl-side">
           <div class="bc-ctrl-label"><span>Neck Flex / Extension</span><span class="bc-val" id="std-lbl-neckflex">Neutral</span></div>
           <input type="range" id="std-ctrl-neckflex" min="-35" max="45" value="0" step="1" class="bc-slider" oninput="updateStdChart()">
-          <div class="bc-ctrl-hints"><span>Extension</span><span>Neutral</span><span>Flexion</span></div>
+          <div class="bc-ctrl-hints"><span>Flexion</span><span>Neutral</span><span>Extension</span></div>
         </div>
       </div>
     </div>
@@ -3101,7 +3169,7 @@ margin: 0 auto 20px;
 <div class="form-card">
   <h3>🙌 Functional Impact</h3>
   <div class="form-group">
-    <label>Sitting Tolerance</label>
+    <label>Sitting Tolerance <span class="obs-info-btn">ℹ<span class="obs-tip">Observe for postural fatigue, pain behaviours, tone changes, or increasing asymmetry over time. Note time of day — sitting tolerance often decreases by afternoon in high-tone presentations.</span></span></label>
     <select id="func-sit">
       <option value="">Select</option>
       <option>Good (&gt;2 hours)</option>
@@ -3125,9 +3193,9 @@ margin: 0 auto 20px;
   <div class="form-group">
     <label>Head Control</label>
     <div class="checkbox-group" id="func-head">
-      <label class="checkbox-pill"><input type="checkbox" value="Independent">Independent</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Partial">Partial</label>
-      <label class="checkbox-pill"><input type="checkbox" value="Dependent">Dependent</label>
+      <label class="checkbox-pill"><input type="radio" name="head-control" value="Independent">Independent</label>
+      <label class="checkbox-pill"><input type="radio" name="head-control" value="Partial">Partial</label>
+      <label class="checkbox-pill"><input type="radio" name="head-control" value="Dependent">Dependent</label>
     </div>
   </div>
   <div class="form-group">
@@ -3152,7 +3220,7 @@ margin: 0 auto 20px;
     </select>
   </div>
   <div class="form-group">
-    <label>Communication Positioning</label>
+    <label>Communication Positioning <span class="obs-info-btn">ℹ<span class="obs-tip">Consider head position and visual field. Eye contact affects communication, AAC access, and social participation. Optimal head position is midline with slight chin tuck.</span></span></label>
     <div class="checkbox-group" id="func-comm">
       <label class="checkbox-pill"><input type="checkbox" value="Adequate eye contact">Adequate eye contact</label>
       <label class="checkbox-pill"><input type="checkbox" value="Visual field concern">Visual field concern</label>
@@ -3160,7 +3228,7 @@ margin: 0 auto 20px;
     </div>
   </div>
   <div class="form-group">
-    <label>Respiratory / Swallow Concerns</label>
+    <label>Respiratory / Swallow Concerns <span class="obs-info-btn">ℹ<span class="obs-tip">Flexed trunk or extended neck can compromise airway protection and swallowing mechanics. Consider referral to SLT if feeding or swallowing concerns are identified.</span></span></label>
     <div class="checkbox-group" id="func-resp">
       <label class="checkbox-pill"><input type="checkbox" value="Respiratory concern">Respiratory</label>
       <label class="checkbox-pill"><input type="checkbox" value="Swallowing concern">Swallowing</label>
@@ -3272,6 +3340,127 @@ margin: 0 auto 20px;
   </div>
   <div class="content" id="results-content">
     <!-- populated dynamically -->
+  </div>
+</div>
+
+<!-- ════════════ SETTINGS SCREEN ════════════ -->
+
+<div class="screen" id="screen-settings">
+  <div class="app-header">
+    <div class="logo">Posture<span>Check</span></div>
+    <button class="back-btn" onclick="goHome()">← Home</button>
+  </div>
+  <div class="content">
+    <div class="screen-title">Settings</div>
+
+    <!-- Appearance -->
+    <div class="settings-section">
+      <div class="settings-section-title">Appearance</div>
+      <div class="settings-toggle">
+        <label for="dark-mode-toggle">Dark Mode</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Assessment Sections -->
+    <div class="settings-section">
+      <div class="settings-section-title">Assessment Sections</div>
+      <div class="settings-section-title" style="font-size:0.72rem;color:var(--soft);margin-top:-6px;margin-bottom:10px;font-weight:400;text-transform:none;letter-spacing:0;">Toggle steps on/off — hidden sections are skipped in the assessment flow.</div>
+      <div class="section-toggle-row">
+        <input type="checkbox" id="sec-step1" checked onchange="saveSectionSettings()">
+        <label for="sec-step1">Step 1 — Patient Information</label>
+      </div>
+      <div class="section-toggle-row">
+        <input type="checkbox" id="sec-step2" checked onchange="saveSectionSettings()">
+        <label for="sec-step2">Step 2 — ROM &amp; Scores (Supine)</label>
+      </div>
+      <div class="section-toggle-row">
+        <input type="checkbox" id="sec-step3" checked onchange="saveSectionSettings()">
+        <label for="sec-step3">Step 3 — PCS Assessment</label>
+      </div>
+      <div class="section-toggle-row">
+        <input type="checkbox" id="sec-step3b" checked onchange="saveSectionSettings()">
+        <label for="sec-step3b">Step 3b — Supine Body Chart</label>
+      </div>
+      <div class="section-toggle-row">
+        <input type="checkbox" id="sec-step4a" checked onchange="saveSectionSettings()">
+        <label for="sec-step4a">Step 4a — Seated Posture</label>
+      </div>
+      <div class="section-toggle-row">
+        <input type="checkbox" id="sec-step4b" checked onchange="saveSectionSettings()">
+        <label for="sec-step4b">Step 4b — Standing Assessment</label>
+      </div>
+      <div class="section-toggle-row">
+        <input type="checkbox" id="sec-step5" checked onchange="saveSectionSettings()">
+        <label for="sec-step5">Step 5 — Risk &amp; Function</label>
+      </div>
+    </div>
+
+    <!-- Cloud Backup (JSONbin) -->
+    <div class="settings-section">
+      <div class="settings-section-title">Cloud Backup (JSONbin)</div>
+      <div class="settings-int-row">
+        <label>JSONbin Master Key</label>
+        <input type="password" id="jsonbin-key" placeholder="$2b$10$...">
+      </div>
+      <div class="settings-int-row">
+        <label>Bin ID (leave blank to create new)</label>
+        <input type="text" id="jsonbin-bin" placeholder="64abc123...">
+      </div>
+      <div class="settings-btn-row">
+        <button class="btn btn-primary" onclick="saveCloudSettings()" style="flex:1;">Save Keys</button>
+        <button class="btn" onclick="backupToJSONbin()" style="flex:1;">Backup Now</button>
+        <button class="btn" onclick="restoreFromJSONbin()" style="flex:1;">Restore</button>
+      </div>
+    </div>
+
+    <!-- Microsoft Integration -->
+    <div class="settings-section">
+      <div class="settings-section-title">Microsoft Integration</div>
+      <div class="settings-btn-row">
+        <button class="btn" onclick="openOneDrive()" style="flex:1;">📁 Open OneDrive</button>
+        <button class="btn" onclick="openCopilot()" style="flex:1;">🤖 Microsoft Copilot</button>
+      </div>
+      <p style="font-size:0.75rem;color:var(--soft);margin-top:8px;">For NHS use: export assessment data as JSON, then import into Copilot or save to OneDrive for record keeping.</p>
+    </div>
+
+    <!-- AI Analysis -->
+    <div class="settings-section">
+      <div class="settings-section-title">AI Analysis (Claude)</div>
+      <div class="settings-int-row">
+        <label>Anthropic API Key (optional)</label>
+        <input type="password" id="ai-key-input" placeholder="sk-ant-...">
+      </div>
+      <div class="settings-btn-row">
+        <button class="btn btn-primary" onclick="saveAIKey()" style="flex:1;">Save Key</button>
+        <button class="btn" onclick="clearAIKey()" style="flex:1;">Clear Key</button>
+      </div>
+      <p style="font-size:0.75rem;color:var(--soft);margin-top:8px;">Without a key, the built-in rule-based analysis is used. With a key, Claude AI provides deeper clinical commentary.</p>
+    </div>
+
+    <!-- Data Management -->
+    <div class="settings-section">
+      <div class="settings-section-title">Data Management</div>
+      <div class="settings-btn-row" style="flex-direction:column;">
+        <button class="btn btn-primary" onclick="exportAllData()" style="width:100%;">⬇️ Export All Data (JSON)</button>
+        <button class="btn" onclick="importDataFromFile()" style="width:100%;">⬆️ Import Data (JSON)</button>
+        <button class="btn" id="clear-data-btn" onclick="confirmClearData()" style="width:100%;color:#e74c3c;border-color:#e74c3c;">🗑️ Clear All Data</button>
+      </div>
+      <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="handleImportFile(this)">
+    </div>
+
+    <!-- About -->
+    <div class="settings-section">
+      <div class="settings-section-title">About</div>
+      <div style="padding:12px 14px;background:var(--surface);border-radius:10px;font-size:0.82rem;color:var(--soft);line-height:1.6;">
+        <strong style="color:var(--text);">PostureCheck</strong> — Paediatric Posture &amp; Seating Assessment<br>
+        For use by physiotherapists and occupational therapists.<br>
+        <span style="font-size:0.72rem;">All data is stored locally on this device. No data is sent to external servers unless cloud backup is configured.</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -3567,7 +3756,23 @@ function goToGBSProcedures() { showScreen('gbs-procedures'); }
 
 function goToBodySymmetry() {
   syncBodyChartFromROM();
+  syncPelvisToBodyChart();
   showScreen('body-symmetry');
+}
+
+function syncPelvisToBodyChart() {
+  const details = getChecked('pelvis-detail');
+  const score = scores['pelvis'] || 0;
+  const oblEl = document.getElementById('ctrl-obliquity');
+  const rotEl = document.getElementById('ctrl-rotation');
+  if (oblEl && oblEl.value === '0') {
+    if (details.includes('Obliquity L high')) oblEl.value = Math.max(10, score * 5);
+    else if (details.includes('Obliquity R high')) oblEl.value = -Math.max(10, score * 5);
+  }
+  if (rotEl && rotEl.value === '0' && details.includes('Rotation')) {
+    rotEl.value = score * 6;
+  }
+  updateBodyChart();
 }
 
 function syncBodyChartFromROM() {
@@ -3600,22 +3805,27 @@ function goToAssessmentStanding() { showScreen('assessment-standing'); }
 // VIEW TAB SWITCHERS
 // ══════════════════════════════════════════
 function setStdView(view, btn) {
-  document.querySelectorAll('.std-view-svg').forEach(s => { s.classList.remove('active-svg'); [s.style](http://s.style).display='none'; });
-  // Only deactivate tabs in the same card
+  document.querySelectorAll('.std-view-svg').forEach(s => { s.classList.remove('active-svg'); s.style.display='none'; });
   btn.closest('.form-card').querySelectorAll('.sit-view-tab').forEach(b => b.classList.remove('active'));
   const svgMap = { ant:'std-ant-svg', post:'std-post-svg', side:'std-side-svg' };
   const svg = document.getElementById(svgMap[view]);
-  if (svg) { svg.classList.add('active-svg'); [svg.style](http://svg.style).display='block'; }
+  if (svg) { svg.classList.add('active-svg'); svg.style.display='block'; }
   btn.classList.add('active');
+  const isSide = view === 'side';
+  document.querySelectorAll('.std-ctrl-frontback').forEach(el => el.style.display = isSide ? 'none' : '');
+  document.querySelectorAll('.std-ctrl-side').forEach(el => el.style.display = isSide ? '' : 'none');
 }
 
 function setSitView(view, btn) {
-  document.querySelectorAll('.sit-view-svg').forEach(s => { s.classList.remove('active-svg'); [s.style](http://s.style).display='none'; });
+  document.querySelectorAll('.sit-view-svg').forEach(s => { s.classList.remove('active-svg'); s.style.display='none'; });
   btn.closest('.form-card').querySelectorAll('.sit-view-tab').forEach(b => b.classList.remove('active'));
   const svgMap = { front:'sit-front-svg', side:'sit-side-svg', top:'sit-top-svg' };
   const svg = document.getElementById(svgMap[view]);
-  if (svg) { svg.classList.add('active-svg'); [svg.style](http://svg.style).display='block'; }
+  if (svg) { svg.classList.add('active-svg'); svg.style.display='block'; }
   btn.classList.add('active');
+  const isSide = view === 'side';
+  document.querySelectorAll('.sit-ctrl-fronttop').forEach(el => el.style.display = isSide ? 'none' : '');
+  document.querySelectorAll('.sit-ctrl-side').forEach(el => el.style.display = isSide ? '' : 'none');
 }
 
 // ══════════════════════════════════════════
@@ -3640,7 +3850,7 @@ function updateSitChart() {
   sl('sit-lbl-obliquity', obl===0?'Level':Math.abs(obl)+'° '+(obl>0?'R High':'L High'));
   sl('sit-lbl-tilt', Math.abs(tilt)<2?'Neutral':Math.abs(tilt)+'° '+(tilt>0?'Ant tilt':'Post tilt'));
   sl('sit-lbl-trunkflex', Math.abs(trunkFlex)<2?'Neutral':Math.abs(trunkFlex)+'° '+(trunkFlex>0?'Flexion':'Extension'));
-  sl('sit-lbl-neckflex',  Math.abs(neckFlex)<2?'Neutral':Math.abs(neckFlex)+'° '+(neckFlex>0?'Extension':'Flexion'));
+  sl('sit-lbl-neckflex',  Math.abs(neckFlex)<2?'Neutral':Math.abs(neckFlex)+'° '+(neckFlex>0?'Flexion':'Extension'));
   sl('sit-lbl-rotation', Math.abs(rot)<2?'Neutral':Math.abs(rot)+'° '+(rot>0?'L fwd':'R fwd'));
   sl('sit-lbl-trunk', lean===0?'Neutral':Math.abs(lean)+'° Lean '+(lean>0?'L':'R'));
   sl('sit-lbl-trot', Math.abs(trot)<2?'Neutral':Math.abs(trot)+'° '+(trot>0?'L fwd':'R fwd'));
@@ -4002,8 +4212,8 @@ function updateStdChart() {
   sl('std-lbl-obliquity', obl===0?'Level':Math.abs(obl)+'° '+(obl>0?'R High':'L High'));
   sl('std-lbl-trunk',  lean===0?'Neutral':Math.abs(lean)+'° Lean '+(lean>0?'L':'R'));
   sl('std-lbl-trot',   Math.abs(trot)<2?'Neutral':Math.abs(trot)+'° '+(trot>0?'L fwd':'R fwd'));
-  sl('std-lbl-trunkflex', Math.abs(trunkFlex)<2?'Neutral':Math.abs(trunkFlex)+'° '+(trunkFlex>0?'Flexion':'Extension'));
-  sl('std-lbl-neckflex',  Math.abs(neckFlex)<2?'Neutral':Math.abs(neckFlex)+'° '+(neckFlex>0?'Flexion':'Extension'));
+  sl('std-lbl-trunkflex', Math.abs(trunkFlex)<2?'Neutral':Math.abs(trunkFlex)+'° '+(trunkFlex>0?'Extension':'Flexion'));
+  sl('std-lbl-neckflex',  Math.abs(neckFlex)<2?'Neutral':Math.abs(neckFlex)+'° '+(neckFlex>0?'Extension':'Flexion'));
   sl('std-lbl-leg-r',  legR===0?'Neutral':Math.abs(legR)+'° '+(legR>0?'Abd':'Add'));
   sl('std-lbl-leg-l',  legL===0?'Neutral':Math.abs(legL)+'° '+(legL>0?'Abd':'Add'));
   sl('std-lbl-knee-r', Math.abs(kneeR)<2?'Neutral':Math.abs(kneeR)+'° '+(kneeR>0?'Flex':'Hyp-ext'));
@@ -5987,15 +6197,21 @@ function getEquipmentWithDetail() {
 
 document.addEventListener('click', function(e) {
   // ws-pill (windswept tooltip pills)
-  const wsPill = [e.target](http://e.target).closest('.ws-pill');
+  const wsPill = e.target.closest('.ws-pill');
   if (wsPill) {
     const input = wsPill.querySelector('input');
     if (input && input.type === 'radio') {
-      document.querySelectorAll(`input[name="${[input.name](http://input.name)}"]`).forEach(r => {
+      document.querySelectorAll(`input[name="${input.name}"]`).forEach(r => {
         r.closest('.ws-pill').classList.remove('selected');
       });
       input.checked = true;
       wsPill.classList.add('selected');
+      return;
+    } else if (input && input.type === 'checkbox') {
+      input.checked = !input.checked;
+      wsPill.classList.toggle('selected', input.checked);
+      input.dispatchEvent(new Event('change', {bubbles: true}));
+      return;
     }
     return;
   }
@@ -6020,7 +6236,8 @@ document.addEventListener('click', function(e) {
 });
 
 function selectScore(region, val, el) {
-  const container = document.getElementById('score-' + region);
+  const container = el.closest('.score-options');
+  if (!container) return;
   container.querySelectorAll('.score-option').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
   scores[region] = val;
@@ -6171,7 +6388,7 @@ function generateReport() {
   currentAssessment.fatigue = getRadio('fatigue');
   [currentAssessment.skin](http://currentAssessment.skin) = getChecked('risk-skin');
   currentAssessment.sittingTolerance = document.getElementById('func-sit').value;
-  currentAssessment.headControl = getChecked('func-head');
+  currentAssessment.headControl = [getRadio('head-control')].filter(v => v);
   currentAssessment.handFunction = document.getElementById('func-hand').value;
   currentAssessment.communication = getChecked('func-comm');
   currentAssessment.respiratory = getChecked('func-resp');
@@ -6322,29 +6539,55 @@ function renderResults() {
           const isType1 = wt.includes('Type 1');
           const kA = isR ? 28 : isL ? -28 : isType1 ? 22 : 0;
           const pA = isR ? -16 : isL ? 16 : isType1 ? 18 : 0;
-          return `<div style="margin:10px 0;background:#f0f8f8;border:1.5px solid #c0dada;border-radius:10px;padding:10px;text-align:center;">
-            <div style="font-size:0.7rem;font-weight:700;color:#5a9e98;text-transform:uppercase;margin-bottom:6px;">Windswept Pattern Diagram — Top-Down View</div>
-            <svg viewBox="0 0 280 185" style="max-width:260px;width:100%;display:block;margin:0 auto;">
-              <text x="14" y="16" font-size="6.5" fill="#8aa8a8" font-family="sans-serif">ANT ▲</text>
-              <text x="14" y="180" font-size="6.5" fill="#8aa8a8" font-family="sans-serif">POST ▼</text>
-              <text x="8" y="95" font-size="6" fill="#8aa8a8" font-family="sans-serif">R</text>
-              <text x="265" y="95" font-size="6" fill="#8aa8a8" font-family="sans-serif">L</text>
-              <g transform="rotate(${pA},140,88)">
-                <ellipse cx="140" cy="88" rx="52" ry="22" fill="#8ec9c2" stroke="#1a6b6b" stroke-width="2"/>
-                <circle cx="192" cy="88" r="5" fill="#1a6b6b"/>
-                <circle cx="88" cy="88" r="5" fill="#1a6b6b"/>
-                <text x="140" y="92" text-anchor="middle" font-size="7" fill="white" font-family="sans-serif" font-weight="700">PELVIS</text>
-              </g>
-              <g transform="rotate(${-kA},88,110)">
-                <rect x="74" y="110" width="28" height="68" rx="8" fill="#d4ece8" stroke="#1a6b6b" stroke-width="1.8"/>
-                <text x="88" y="148" text-anchor="middle" font-size="6.5" fill="#1a6b6b" font-family="sans-serif" font-weight="600">R</text>
-              </g>
-              <g transform="rotate(${kA},192,110)">
-                <rect x="178" y="110" width="28" height="68" rx="8" fill="#d4ece8" stroke="#1a6b6b" stroke-width="1.8"/>
-                <text x="192" y="148" text-anchor="middle" font-size="6.5" fill="#1a6b6b" font-family="sans-serif" font-weight="600">L</text>
-              </g>
-            </svg>
-            <div style="font-size:0.72rem;color:#5a8a8a;margin-top:4px;">${wt}</div>
+          const supObl = isR ? 14 : isL ? -14 : 0;
+          const supKR  = isR ? -32 : isL ? 20 : 0;
+          const supKL  = isR ? 20 : isL ? -32 : 0;
+          return `<div style="margin:10px 0;background:#f0f8f8;border:1.5px solid #c0dada;border-radius:10px;padding:10px;">
+            <div style="font-size:0.7rem;font-weight:700;color:#5a9e98;text-transform:uppercase;margin-bottom:8px;text-align:center;">Windswept Pattern Diagram</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div style="text-align:center;">
+                <div style="font-size:0.62rem;color:#8aa8a8;margin-bottom:4px;font-weight:600;">SUPINE — FRONT VIEW</div>
+                <svg viewBox="0 0 140 220" style="width:100%;display:block;margin:0 auto;">
+                  <text x="70" y="12" text-anchor="middle" font-size="6" fill="#8aa8a8" font-family="sans-serif">HEAD</text>
+                  <ellipse cx="70" cy="24" rx="14" ry="16" fill="#d4ece8" stroke="#1a6b6b" stroke-width="1.5"/>
+                  <rect x="54" y="42" width="32" height="70" rx="8" fill="#8ec9c2" stroke="#1a6b6b" stroke-width="1.5" transform="rotate(${supObl},70,77)"/>
+                  <text x="70" y="80" text-anchor="middle" font-size="5.5" fill="white" font-family="sans-serif" font-weight="700" transform="rotate(${supObl},70,77)">TRUNK</text>
+                  <g transform="rotate(${supKR},44,130)">
+                    <rect x="30" y="130" width="18" height="56" rx="6" fill="#d4ece8" stroke="#1a6b6b" stroke-width="1.5"/>
+                    <text x="39" y="162" text-anchor="middle" font-size="5.5" fill="#1a6b6b" font-family="sans-serif">R</text>
+                  </g>
+                  <g transform="rotate(${supKL},96,130)">
+                    <rect x="88" y="130" width="18" height="56" rx="6" fill="#d4ece8" stroke="#1a6b6b" stroke-width="1.5"/>
+                    <text x="97" y="162" text-anchor="middle" font-size="5.5" fill="#1a6b6b" font-family="sans-serif">L</text>
+                  </g>
+                  <text x="14" y="115" font-size="5.5" fill="#8aa8a8" font-family="sans-serif">R</text>
+                  <text x="118" y="115" font-size="5.5" fill="#8aa8a8" font-family="sans-serif">L</text>
+                  <text x="70" y="212" text-anchor="middle" font-size="6" fill="#8aa8a8" font-family="sans-serif">FEET</text>
+                </svg>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:0.62rem;color:#8aa8a8;margin-bottom:4px;font-weight:600;">TOP-DOWN VIEW</div>
+                <svg viewBox="0 0 140 175" style="width:100%;display:block;margin:0 auto;">
+                  <text x="70" y="12" text-anchor="middle" font-size="6" fill="#8aa8a8" font-family="sans-serif">ANT ▲</text>
+                  <text x="70" y="170" text-anchor="middle" font-size="6" fill="#8aa8a8" font-family="sans-serif">POST ▼</text>
+                  <text x="6" y="92" font-size="5.5" fill="#8aa8a8" font-family="sans-serif">R</text>
+                  <text x="127" y="92" font-size="5.5" fill="#8aa8a8" font-family="sans-serif">L</text>
+                  <g transform="rotate(${pA},70,80)">
+                    <ellipse cx="70" cy="80" rx="40" ry="18" fill="#8ec9c2" stroke="#1a6b6b" stroke-width="1.5"/>
+                    <text x="70" y="84" text-anchor="middle" font-size="5.5" fill="white" font-family="sans-serif" font-weight="700">PELVIS</text>
+                  </g>
+                  <g transform="rotate(${-kA},44,100)">
+                    <rect x="35" y="100" width="18" height="52" rx="6" fill="#d4ece8" stroke="#1a6b6b" stroke-width="1.5"/>
+                    <text x="44" y="130" text-anchor="middle" font-size="5.5" fill="#1a6b6b" font-family="sans-serif">R</text>
+                  </g>
+                  <g transform="rotate(${kA},96,100)">
+                    <rect x="87" y="100" width="18" height="52" rx="6" fill="#d4ece8" stroke="#1a6b6b" stroke-width="1.5"/>
+                    <text x="96" y="130" text-anchor="middle" font-size="5.5" fill="#1a6b6b" font-family="sans-serif">L</text>
+                  </g>
+                </svg>
+              </div>
+            </div>
+            <div style="font-size:0.72rem;color:#5a8a8a;margin-top:6px;text-align:center;">${wt}</div>
           </div>`;
         })() : ''}
         ${a.gbs.kneePref ? `<div class="report-row"><span class="rk">Knee preference</span><span class="rv">${a.gbs.kneePref}</span></div>` : ''}
@@ -6388,6 +6631,24 @@ function renderResults() {
       <div class="btn-row">
         <button class="btn btn-outline" onclick="printReport()">🖨️ Print Report</button>
         <button class="btn btn-primary" onclick="goHome()">🏠 Done</button>
+      </div>
+      <div id="ai-analysis-section" style="margin-top:16px;background:#f0f8f8;border:1.5px solid var(--teal);border-radius:14px;padding:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div>
+            <div style="font-weight:700;font-size:0.95rem;color:var(--teal);">🤖 AI Intervention Suggestions</div>
+            <div style="font-size:0.75rem;color:var(--soft);margin-top:2px;">Built-in clinical rules · or use Anthropic API for advanced analysis</div>
+          </div>
+          <button class="btn btn-outline" onclick="runAIAnalysis()" id="ai-btn" style="font-size:0.82rem;padding:7px 14px;">Analyse →</button>
+        </div>
+        <div id="ai-result" style="font-size:0.85rem;line-height:1.7;color:var(--text);"></div>
+        <div id="ai-api-row" style="margin-top:10px;display:none;">
+          <div style="font-size:0.75rem;color:var(--soft);margin-bottom:4px;">Anthropic API key (optional — for advanced Claude analysis)</div>
+          <div style="display:flex;gap:8px;">
+            <input type="password" id="ai-api-key" placeholder="sk-ant-..." style="flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;">
+            <button class="btn btn-primary" onclick="runClaudeAnalysis()" style="font-size:0.82rem;padding:7px 14px;">Run with Claude</button>
+          </div>
+        </div>
+        <button onclick="document.getElementById('ai-api-row').style.display=document.getElementById('ai-api-row').style.display==='none'?'block':'none'" style="background:none;border:none;color:var(--soft);font-size:0.72rem;cursor:pointer;margin-top:6px;padding:0;">Use API key ▾</button>
       </div>
       <div style="height:32px;"></div>
     </div>
@@ -6517,6 +6778,102 @@ function viewAssessment(assessmentId) {
   showScreen('results');
 }
 
+
+// ══════════════════════════════════════════
+// AI ANALYSIS — BUILT-IN RULES + API KEY
+// ══════════════════════════════════════════
+function runAIAnalysis() {
+  const a = currentAssessment;
+  if (!a) return;
+  const btn = document.getElementById('ai-btn');
+  btn.disabled = true; btn.textContent = 'Analysing…';
+  const result = document.getElementById('ai-result');
+
+  const sug = [];
+  const scores = a.scores || {};
+  const rom = a.rom || {};
+
+  // Pelvis
+  if (scores.pelvis >= 2) sug.push('⚠️ <strong>Pelvic obliquity:</strong> Consider custom-moulded seating insert or lateral pelvic supports. Review hip ROM to assess whether asymmetry is fixed or correctable. Physiotherapy input recommended for hands-on stretching programme.');
+  if (a.pelvisDetail && a.pelvisDetail.includes('Posterior tilt')) sug.push('🦴 <strong>Posterior pelvic tilt:</strong> Assess for hamstring tightness and hip flexor length. Seating intervention: anterior tilt wedge or anterior pelvic strap. Consider standing frame programme to promote extension.');
+  if (a.pelvisDetail && a.pelvisDetail.includes('Anterior tilt')) sug.push('🦴 <strong>Anterior pelvic tilt:</strong> Check for hip flexor tightness (Thomas test). Seated support: posterior pelvic strap, seat depth adjustment. Core stabilisation exercises when appropriate.');
+
+  // Hips
+  if (scores.hip >= 2) sug.push('🦵 <strong>Hip asymmetry:</strong> Hip surveillance x-ray recommended if not recent. Discuss with orthopaedic team if migration index elevated. Night-time postural management programme (lying system) is indicated.');
+  if (a.rom && parseFloat(a.rom.hipAbdL) < 15 && parseFloat(a.rom.hipAbdR) > 25) sug.push('📐 <strong>Hip abduction asymmetry:</strong> Significant left-right difference in hip abduction suggests windswept positioning. Symmetrical hip abductor stretching and night positioning review required.');
+
+  // Knees
+  if (scores.knee >= 2) sug.push('🦶 <strong>Knee asymmetry:</strong> Assess for hamstring contracture with popliteal angle. Serial casting or orthotic input may be indicated. Review footrest height and depth in wheelchair seating.');
+  if (a.kneeDetail && (a.kneeDetail.includes('Knee flexion contracture R') || a.kneeDetail.includes('Knee flexion contracture L'))) sug.push('📏 <strong>Knee flexion contracture:</strong> Night-time knee extension splinting to maintain or improve range. Standing programme with appropriate orthoses. Physiotherapy stretching protocol.');
+
+  // Trunk
+  if (scores.trunk >= 2) sug.push('🏋️ <strong>Trunk asymmetry:</strong> Assess spinal curve with school nurse or clinical photography. Seating: lateral trunk supports, consider curved backrest. Referral to spinal team if scoliosis suspected.');
+
+  // Feet
+  if (scores.foot >= 2) sug.push('👟 <strong>Foot deformity:</strong> Orthotic assessment — consider supramalleolar or AFOs depending on deformity type. Foot care and footwear review. Serial casting may be appropriate for equinus.');
+
+  // Risk factors
+  if (a.pressure === 'High') sug.push('⚠️ <strong>High pressure risk:</strong> Urgent cushion review — consider pressure-relieving foam, gel or air cushion. Positioning schedule and skin check protocol. Referral to tissue viability nurse if skin breakdown present.');
+  if (a.skinIntegrity && a.skinIntegrity.some(s => s !== 'None')) sug.push('🩺 <strong>Skin integrity concerns:</strong> Photograph and document affected areas. Review pressure mapping if available. Assess equipment fit and positioning schedule. Dietitian referral if nutritional concern.');
+
+  // Head control
+  if (a.headControl && a.headControl[0] === 'Dependent') sug.push('🧠 <strong>Dependent head control:</strong> Headrest assessment — ensure appropriate support without restricting function. AAC switch access review. Consider cervical collar trial for assessment purposes only.');
+
+  // PCS score
+  if (a.pcs && a.pcs.pcsTotalScore >= 8) sug.push('📊 <strong>High PCS score (≥8):</strong> Significant postural asymmetry across multiple domains. Multi-disciplinary team review recommended. Consider 24-hour postural management programme including day, evening and night positioning.');
+  else if (a.pcs && a.pcs.pcsTotalScore >= 4) sug.push('📊 <strong>Moderate PCS score:</strong> Review postural support across the day. Ensure appropriate seating, standing and lying positioning. Annual review or sooner if progression noted.');
+
+  // GMFCS
+  if (parseInt(a.gmfcs) >= 4) sug.push('♿ <strong>High support needs (GMFCS IV–V):</strong> 24-hour postural management plan essential. Ensure coordinated review of seating, standing frame, sleep system and manual handling. Carer training and equipment review recommended.');
+
+  if (sug.length === 0) sug.push('✅ No significant concerns identified from the assessment data. Continue routine monitoring and review as clinically indicated.');
+
+  setTimeout(() => {
+    result.innerHTML = '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">' +
+      sug.map(s => `<li style="padding:10px 12px;background:white;border-radius:8px;border-left:3px solid var(--teal);">${s}</li>`).join('') +
+      '</ul>';
+    btn.disabled = false; btn.textContent = 'Re-analyse →';
+  }, 400);
+}
+
+async function runClaudeAnalysis() {
+  const key = document.getElementById('ai-api-key').value.trim();
+  if (!key) { alert('Please enter your Anthropic API key'); return; }
+  const a = currentAssessment;
+  const result = document.getElementById('ai-result');
+  result.innerHTML = '<div style="color:var(--soft);font-size:0.85rem;">Sending to Claude…</div>';
+
+  const summary = JSON.stringify({
+    patient: { name: a.patientName, dob: a.dob, diagnosis: a.diagnosis, gmfcs: a.gmfcs },
+    scores: a.scores,
+    pcs: a.pcs,
+    rom: a.rom,
+    headDetail: a.headDetail, trunkDetail: a.trunkDetail, pelvisDetail: a.pelvisDetail,
+    hipDetail: a.hipDetail, kneeDetail: a.kneeDetail, footDetail: a.footDetail,
+    pressure: a.pressure, pain: a.pain, fatigue: a.fatigue,
+    skinIntegrity: a.skinIntegrity, headControl: a.headControl,
+    recommendations: a.recommendations
+  }, null, 2);
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-opus-4-7',
+        max_tokens: 1024,
+        messages: [{ role: 'user', content: `You are a specialist paediatric physiotherapist and assistive technology OT. Based on this PostureCheck clinical assessment, provide concise, practical intervention suggestions in bullet points. Focus on postural management, equipment, therapy, and referrals. Assessment data:\n${summary}` }]
+      })
+    });
+    if (!resp.ok) { const err = await resp.json(); throw new Error(err.error?.message || resp.statusText); }
+    const data = await resp.json();
+    const text = data.content[0].text;
+    result.innerHTML = `<div style="white-space:pre-wrap;line-height:1.7;">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
+  } catch (e) {
+    result.innerHTML = `<div style="color:#c42828;">Error: ${e.message}</div>`;
+  }
+}
+
 // ══════════════════════════════════════════
 // STATS & PRINT
 // ══════════════════════════════════════════
@@ -6567,6 +6924,165 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
+
+// ══════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════
+
+function goToSettings() {
+  showScreen('screen-settings');
+  loadSettingsUI();
+}
+
+function loadSettingsUI() {
+  // Dark mode
+  const dark = localStorage.getItem('pc_dark') === '1';
+  const tog = document.getElementById('dark-mode-toggle');
+  if (tog) tog.checked = dark;
+
+  // Section toggles
+  const sections = JSON.parse(localStorage.getItem('pc_sections') || '{}');
+  ['step1','step2','step3','step3b','step4a','step4b','step5'].forEach(id => {
+    const el = document.getElementById('sec-' + id);
+    if (el) el.checked = sections[id] !== false;
+  });
+
+  // JSONbin keys
+  const jKey = document.getElementById('jsonbin-key');
+  const jBin = document.getElementById('jsonbin-bin');
+  if (jKey) jKey.value = localStorage.getItem('pc_jb_key') || '';
+  if (jBin) jBin.value = localStorage.getItem('pc_jb_bin') || '';
+
+  // AI key
+  const aiKey = document.getElementById('ai-key-input');
+  if (aiKey) aiKey.value = localStorage.getItem('pc_ai_key') || '';
+}
+
+function toggleDarkMode(on) {
+  document.documentElement.setAttribute('data-theme', on ? 'dark' : 'light');
+  localStorage.setItem('pc_dark', on ? '1' : '0');
+}
+
+function saveSectionSettings() {
+  const sections = {};
+  ['step1','step2','step3','step3b','step4a','step4b','step5'].forEach(id => {
+    const el = document.getElementById('sec-' + id);
+    if (el) sections[id] = el.checked;
+  });
+  localStorage.setItem('pc_sections', JSON.stringify(sections));
+  showToast('Section settings saved');
+}
+
+function saveCloudSettings() {
+  const key = (document.getElementById('jsonbin-key') || {}).value || '';
+  const bin = (document.getElementById('jsonbin-bin') || {}).value || '';
+  localStorage.setItem('pc_jb_key', key.trim());
+  localStorage.setItem('pc_jb_bin', bin.trim());
+  showToast('Cloud settings saved');
+}
+
+async function backupToJSONbin() {
+  const key = localStorage.getItem('pc_jb_key');
+  if (!key) { showToast('Enter your JSONbin master key first'); return; }
+  const data = { patients: JSON.parse(localStorage.getItem('pc_patients') || '[]'), ts: Date.now() };
+  const binId = localStorage.getItem('pc_jb_bin');
+  const url = binId ? `https://api.jsonbin.io/v3/b/${binId}` : 'https://api.jsonbin.io/v3/b';
+  const method = binId ? 'PUT' : 'POST';
+  try {
+    const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'X-Master-Key': key, 'X-Bin-Name': 'PostureCheck' }, body: JSON.stringify(data) });
+    const json = await res.json();
+    if (!binId && json.metadata && json.metadata.id) {
+      localStorage.setItem('pc_jb_bin', json.metadata.id);
+      const binInput = document.getElementById('jsonbin-bin');
+      if (binInput) binInput.value = json.metadata.id;
+    }
+    showToast(res.ok ? 'Backup successful!' : 'Backup failed: ' + res.status);
+  } catch(e) { showToast('Backup failed: ' + e.message); }
+}
+
+async function restoreFromJSONbin() {
+  const key = localStorage.getItem('pc_jb_key');
+  const binId = localStorage.getItem('pc_jb_bin');
+  if (!key || !binId) { showToast('Enter JSONbin key and bin ID first'); return; }
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, { headers: { 'X-Master-Key': key } });
+    const json = await res.json();
+    if (json.record && json.record.patients) {
+      localStorage.setItem('pc_patients', JSON.stringify(json.record.patients));
+      showToast('Restore successful! ' + json.record.patients.length + ' patients loaded.');
+    } else { showToast('No data found in bin'); }
+  } catch(e) { showToast('Restore failed: ' + e.message); }
+}
+
+function openOneDrive() {
+  window.open('https://onedrive.live.com', '_blank');
+}
+
+function openCopilot() {
+  window.open('https://copilot.microsoft.com', '_blank');
+}
+
+function saveAIKey() {
+  const k = (document.getElementById('ai-key-input') || {}).value || '';
+  localStorage.setItem('pc_ai_key', k.trim());
+  showToast(k ? 'API key saved' : 'Key cleared');
+}
+
+function clearAIKey() {
+  localStorage.removeItem('pc_ai_key');
+  const inp = document.getElementById('ai-key-input');
+  if (inp) inp.value = '';
+  showToast('API key cleared');
+}
+
+function exportAllData() {
+  const data = { patients: JSON.parse(localStorage.getItem('pc_patients') || '[]'), exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'posturecheck-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  showToast('Export downloaded');
+}
+
+function importDataFromFile() {
+  const inp = document.getElementById('import-file-input');
+  if (inp) inp.click();
+}
+
+function handleImportFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.patients) {
+        const existing = JSON.parse(localStorage.getItem('pc_patients') || '[]');
+        const merged = [...existing];
+        data.patients.forEach(p => { if (!merged.find(x => x.id === p.id)) merged.push(p); });
+        localStorage.setItem('pc_patients', JSON.stringify(merged));
+        showToast('Imported ' + data.patients.length + ' patients');
+      } else { showToast('Invalid backup file'); }
+    } catch(ex) { showToast('Import failed: ' + ex.message); }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+function confirmClearData() {
+  if (confirm('Delete ALL patient records and assessments? This cannot be undone.')) {
+    localStorage.removeItem('pc_patients');
+    showToast('All data cleared');
+  }
+}
+
+// Apply saved dark mode on load
+(function() {
+  if (localStorage.getItem('pc_dark') === '1') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+})();
 
 // ══════════════════════════════════════════
 // ROM COLOUR CODING
